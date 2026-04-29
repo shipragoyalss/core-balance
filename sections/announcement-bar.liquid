@@ -1,19 +1,30 @@
 {%- if section.settings.text != blank -%}
   {%- assign icon_style = settings.icons_style -%}
-  <announcement-bar data-section-id="{{ section.id }}" class="announcement-bar {{ section.settings.font_type }}{% unless request.design_mode %} hide{% endunless %}" style="background: {{ section.settings.background_color }}; color: {{ section.settings.text_color }};" role="region" aria-label="{{ 'sections.header.announcement' | t }}">
+  <announcement-bar
+    data-section-id="{{ section.id }}"
+    class="announcement-bar {{ section.settings.font_type }}{% unless request.design_mode %} hide{% endunless %}"
+    style="background: {{ section.settings.background_color }}; color: {{ section.settings.text_color }};"
+    role="region"
+    aria-label="{{ 'sections.header.announcement' | t }}"
+  >
     <div class="page-width">
       <div class="announcement" style="--font-section-scale: {{ section.settings.font_size | divided_by: 100.0 }};">
         {%- if section.settings.link != blank -%}
           <a href="{{ section.settings.link }}" style="color: {{ section.settings.text_color }};">
         {%- endif -%}
-          <div class="announcement__text">
-            {{ section.settings.text }}
-          </div>
+        <div class="announcement__text">
+          {{ section.settings.text }}
+        </div>
         {%- if section.settings.link != blank -%}
           </a>
         {%- endif -%}
         {%- if section.settings.dismiss_button -%}
-          <button type="button" class="announcement__close button--icon modal__close-button link link--text focus-inset" aria-label="{{ 'accessibility.close' | t }}" style="color: {{ section.settings.text_color }};">
+          <button
+            type="button"
+            class="announcement__close button--icon modal__close-button link link--text focus-inset"
+            aria-label="{{ 'accessibility.close' | t }}"
+            style="color: {{ section.settings.text_color }};"
+          >
             <i class="{{ icon_style }} fa-xmark-large" style="--fa-secondary-opacity: 1;"></i>
           </button>
         {%- endif -%}
@@ -30,7 +41,7 @@
       const closeButton = this.querySelector('.announcement__close');
       const ad = window.sessionStorage.getItem('announcementDismissed');
 
-      if ( !ad ) {
+      if (!ad) {
         this.classList.remove('hide');
       }
 
@@ -40,7 +51,7 @@
     }
 
     hideAnnouncement() {
-      window.sessionStorage.setItem("announcementDismissed", true);
+      window.sessionStorage.setItem('announcementDismissed', true);
       this.classList.add('announcement-bar--hide');
 
       setTimeout(() => {
