@@ -1,0 +1,64 @@
+{% comment %}
+    Renders an featured article card for a given blog.
+
+    Accepts:
+    - blog: {Object} Blog object
+    - article: {Object} Article object
+    - show_date: {String} The setting either show the article date or not. If it's not included it will not show the image by default
+    - show_author: {String} The setting either show the article author or not. If it's not included it will not show the author by default
+
+    Usage:
+    {% render 'featured-card' blog: blog, article: article %}
+{% endcomment %}
+
+<div class="featured-card background-modal">
+  <a href="{{ article.url }}" class="featured-card__link-content">
+    <div class="featured-card__image">
+      {%- if article.image -%}
+      <div class="media media--transparent" style="padding-bottom: {{ 1 | divided_by: article.image.aspect_ratio | times: 100 }}%;">
+        <img
+          srcset="{%- if article.image.src.height >= 165 -%}{{ article.image.src | img_url: 'x165' }} 165w,{%- endif -%}
+            {%- if article.image.src.height >= 360 -%}{{ article.image.src | img_url: 'x360' }} 360w,{%- endif -%}
+            {%- if article.image.src.height >= 533 -%}{{ article.image.src | img_url: 'x533' }} 533w,{%- endif -%}
+            {%- if article.image.src.height >= 720 -%}{{ article.image.src | img_url: 'x720' }} 720w,{%- endif -%}
+            {%- if article.image.src.height >= 940 -%}{{ article.image.src | img_url: 'x940' }} 940w,{%- endif -%}
+            {%- if article.image.src.height >= 1065 -%}{{ article.image.src | img_url: 'x1065' }} 1065w{%- endif -%}"
+          src="{{ article.image.src | img_url: 'x1065' }}"
+          loading="lazy"
+          sizes="(min-width: 1520px) {{ 1520 | minus: 130 | divided_by: 4 }}px, (min-width: 990px) calc((100vw - 130px) / 4), (min-width: 750px) calc((100vw - 120px) / 3), calc((100vw - 35px) / 2)"
+          width="{{ article.image.src.width }}"
+          height="{{ article.image.src.height }}"
+          alt="{{ article.image.src.alt | escape }}"
+        >
+      </div>
+      {%- else -%}
+        <div class="product-card__empty-image media--square">
+          <h4 class="product-card__text">{{ 'general.card.article' | t }}</h4>
+        </div>
+      {%- endif -%}
+    </div>
+    <div class="featured-card__content">
+      <h3>{{ article.title | escape }}</h3>
+      {%- if show_date or show_author -%}
+        <div class="featured-card__content__info">
+          {%- if show_author -%}
+            <span class="featured-card__text-info circle-divider">{{ article.author }}</span>
+          {%- endif -%}
+          {%- if show_date -%}
+            <span class="featured-card__text-info">{{ article.published_at | time_tag: format: 'date' }}</span>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+      {%- if article.excerpt.size > 0 or article.content.size > 0 -%}
+        <p class="featured-card__excerpt">
+          {%- if article.excerpt.size > 0 -%}
+            {{ article.excerpt | strip_html | truncatewords: 100 }}
+          {%- else -%}
+            {{ article.content | strip_html | truncatewords: 100 }}
+          {%- endif -%}
+        </p>
+      {%- endif -%}
+      <div class="btn btn--secondary btn--small">{{ 'blogs.read_more' | t }}</div>
+    </div>
+  </a>
+</div>

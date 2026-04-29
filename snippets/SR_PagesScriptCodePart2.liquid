@@ -1,0 +1,1104 @@
+<!--Dashboard Script-->
+
+<script>
+  var NoOfOrdersChartData = [];
+  var SalesChartData = [];
+  var CommissionChartData = [];  
+  var FeatureWiseOrder = [];
+  var FeatureWiseCommission = [];
+  
+  var setGraphData = function(data){
+    $("#DashboardGraphs").show();
+    NoOfOrdersChartData = data.NumberOfOrders;
+    SalesChartData = data.TotalSaleOfMonths;
+    BonusData = data.TotalBonusPerMonths;
+    CommissionChartData = data.TotalCommissionPerMonths;
+    var OrderDataPresent= false;
+    var SalesDataPresent = false;
+    var CommissionDataPresent = false;
+//    console.log(NoOfOrdersChartData);
+//    console.log(SalesChartData);
+//    console.log(CommissionChartData); 
+    
+    if(FeatureWiseOrder.length == 0){
+      FeatureWiseOrder.push(
+        {"Feature" : "Discount Coupon", "Value" : data.salesrepCouponOrders[0].CouponCodeOrderCount != undefined && data.salesrepCouponOrders[0].CouponCodeOrderCount != null && data.salesrepCouponOrders[0].CouponCodeOrderCount != '' ? data.salesrepCouponOrders[0].CouponCodeOrderCount : 0},
+        {"Feature" : "Return Customer", "Value" : data.TaggedCustomerOrdersDetails[0].TagCustomerOrderCount != undefined && data.TaggedCustomerOrdersDetails[0].TagCustomerOrderCount != null && data.TaggedCustomerOrdersDetails[0].TagCustomerOrderCount != ''? data.TaggedCustomerOrdersDetails[0].TagCustomerOrderCount : 0},
+        {"Feature" : "Affiliate Order", "Value" : data.salesrepAffiliateOrders[0].AffiliateOrderCount != undefined && data.salesrepAffiliateOrders[0].AffiliateOrderCount != null && data.salesrepAffiliateOrders[0].AffiliateOrderCount != ''? data.salesrepAffiliateOrders[0].AffiliateOrderCount :0 },
+        {"Feature" : "Client Invoice", "Value" : data.salesrepCustomerOrders[0].CustomerOrderCount != undefined && data.salesrepCustomerOrders[0].CustomerOrderCount != null && data.salesrepCustomerOrders[0].CustomerOrderCount != '' ? data.salesrepCustomerOrders[0].CustomerOrderCount : 0},
+      )
+//      console.log(FeatureWiseOrder);
+    }
+    if(FeatureWiseCommission.length == 0){
+      FeatureWiseCommission.push(
+        {"Feature" : "Discount Coupon", "Value" : data.salesrepCouponOrders[0].CouponCodeOrderCommission != undefined && data.salesrepCouponOrders[0].CouponCodeOrderCommission != null && data.salesrepCouponOrders[0].CouponCodeOrderCommission != '' ? data.salesrepCouponOrders[0].CouponCodeOrderCommission : 0 },
+        {"Feature" : "Return Customer", "Value" : data.TaggedCustomerOrdersDetails[0].TagCustomerCommission != undefined && data.TaggedCustomerOrdersDetails[0].TagCustomerCommission != null && data.TaggedCustomerOrdersDetails[0].TagCustomerCommission != '' ? data.TaggedCustomerOrdersDetails[0].TagCustomerCommission : 0},
+        {"Feature" : "Affiliate Order", "Value" : data.salesrepAffiliateOrders[0].AffiliateOrderCommission != undefined &&  data.salesrepAffiliateOrders[0].AffiliateOrderCommission != null && data.salesrepAffiliateOrders[0].AffiliateOrderCommission != '' ? data.salesrepAffiliateOrders[0].AffiliateOrderCommission : 0},
+        {"Feature" : "Client Invoice", "Value" :  data.salesrepCustomerOrders[0].CustomerOrderCommission != undefined && data.salesrepCustomerOrders[0].CustomerOrderCommission != null && data.salesrepCustomerOrders[0].CustomerOrderCommission != '' ? data.salesrepCustomerOrders[0].CustomerOrderCommission : 0},      
+      )
+//    console.log(FeatureWiseCommission);
+    }
+
+         for(var i=0;i<SalesChartData.length;i++)
+      
+      {
+         if (SalesChartData[i].TotalSale  != 0 )
+           {
+             SalesDataPresent = true;
+             break;
+           }
+      }
+
+     document.getElementById('CurrentMonthTotalOrder').innerHTML = NoOfOrdersChartData[0].countOfOrder != undefined && NoOfOrdersChartData[0].countOfOrder != null && NoOfOrdersChartData[0].countOfOrder != '' ? NoOfOrdersChartData[0].countOfOrder : 0;
+     document.getElementById('CurrentMonthCommission').innerHTML = CommissionChartData[0].TotalCommission != undefined && CommissionChartData[0].TotalCommission != null && CommissionChartData[0].TotalCommission != '' ? moneyformate + parseFloat(CommissionChartData[0].TotalCommission).toFixed(2)   : moneyformate + '0.00' ;
+     document.getElementById('CurrentMonthSales').innerHTML = SalesChartData[0].TotalSale != undefined && SalesChartData[0].TotalSale != null && SalesChartData[0].TotalSale != '' ?  moneyformate + parseFloat(SalesChartData[0].TotalSale).toFixed(2)  : moneyformate+ '0.00' ;
+     google.charts.setOnLoadCallback(showFeatureWiseOrders);
+     google.charts.setOnLoadCallback(showFeatureWiseCommission);
+        google.charts.setOnLoadCallback(showCommissionChartData);
+        google.charts.setOnLoadCallback(showNoOfOrdersChartData);
+     if(data.select.CustomTieredBasedBonus && BonusData.length > 0)
+     {
+        document.getElementById('CurrentMonthBonus').innerHTML = BonusData[0].TotalBonus != undefined && BonusData[0].TotalBonus != null && BonusData[0].TotalBonus != '' ?  moneyformate + BonusData[0].TotalBonus  : moneyformate+ 0 ;
+     	$('#bonus_card').show();
+     }
+
+         if(SalesDataPresent == true  )
+         {
+             google.charts.setOnLoadCallback(showSalesChartData);
+          }
+       else 
+         {
+         document.getElementById('sales_chart_div').innerHTML = "<div style='height:inherit;display:flex;align-items:center;'><div style='width:93%;height:auto;border-radius:20px;margin-left:20px;margin-right:18px;background:#e0e0e0;padding:21px 15px 20px 21px;'><h1 style='font-size:17px;font-weight:900;margin-bottom:10px'>SALES</h1><div style='display:inline-flex;text-align:left;margin-bottom:6px;'><img style='filter:brightness(0.3);' src='{{'customericon.png'|asset_url}}'/><div style='font-weight:600;font-size:17px;margin-left:5px'>We need data...</div></div><h2 style='font-size:16px;'>Looks like we do not have any data to show yet.</h2></div></div>";
+        }
+      }
+ 
+      
+  
+  function showNoOfOrdersChartData() {
+      var data1 = new google.visualization.DataTable();
+      data1.addColumn('string', 'Month');
+      data1.addColumn('number', 'Orders');
+	  data1.addColumn({ type : 'number', role: 'annotation' });
+		for(var i = NoOfOrdersChartData.length - 1; i >= 0; i--)
+        {
+        	data1.addRows([[NoOfOrdersChartData[i].month,NoOfOrdersChartData[i].countOfOrder,NoOfOrdersChartData[i].countOfOrder]]);
+        }
+    	
+        var options = {
+           title:'ORDERS',
+           titleTextStyle: {
+              fontSize: 15,
+           },
+           legend: 'none',
+           hAxis: {
+           	title: 'Month',
+            titleTextStyle: {
+                 bold: true,
+                italic: false
+            },
+        	logScale: true,
+        	},
+           vAxis: {
+              title: 'Orders',
+              titleTextStyle: {
+                 bold: true,
+                italic: false
+               },
+             logScale: false,
+           },  
+           backgroundColor: '#E0E0E0',
+           colors: ['#000000'],
+        };
+
+	var chart = new google.visualization.LineChart(document.getElementById('order_chart_div'));
+    chart.draw(data1, options);
+  }
+   function showSalesChartData() {
+  	var data3 = new google.visualization.DataTable();
+    data3.addColumn('string', 'Month');
+    data3.addColumn('number', 'Sales');
+  
+	for(var i = SalesChartData.length - 1; i >= 0; i--)
+    {
+    	data3.addRows([[SalesChartData[i].month,SalesChartData[i].TotalSale]]);
+      
+    } 
+   
+    var options = {
+      
+      title:'SALES',
+      titleTextStyle: {
+        	fontSize: 15,
+        },
+      legend: { position: 'bottom' },
+      backgroundColor: '#E0E0E0',
+      colors :["#6666FF","#CCE5FF","#3399FF","#99CCFF","#66B2FF","#7CB9E8"]
+    };
+    
+    var chart = new google.visualization.PieChart(document.getElementById('sales_chart_div'));
+    chart.draw(data3, options);
+  }
+
+  function showCommissionChartData()
+  {
+    var data2 = new google.visualization.DataTable();
+
+     //   Declare columns
+    data2.addColumn('string', 'Month');
+    data2.addColumn('number', 'Commissions');
+    data2.addColumn({ type : 'string', role: 'style' });
+    data2.addColumn({ type : 'number', role: 'annotation' });
+    for(var i = CommissionChartData.length - 1; i >= 0; i--)
+    {
+    	data2.addRows([[CommissionChartData[i].month, CommissionChartData[i].TotalCommission, 'opacity: 0.7',CommissionChartData[i].TotalCommission]]);
+    }
+	
+    var options = {
+    	title:'COMMISSION',
+        titleTextStyle: {
+        	fontSize: 15,
+        },
+      	trendlines: { 0: {} },
+        legend: 'none',
+        
+        hAxis:{title: 'Month',
+        	titleTextStyle: {
+                bold: true,
+                italic: false
+        	}
+         },
+        vAxis: { 
+        	title: 'Commission',
+            format:moneyformate,
+            titleTextStyle: {
+                bold: true,
+                italic: false
+        	}
+        },
+        backgroundColor: '#E0E0E0',
+        colors: ['#FF6619'],
+       };
+       var chart = new google.visualization.ColumnChart(document.getElementById('commission_chart_div'));
+       chart.draw(data2, options);
+  }
+  
+  var columnColors =['opacity: 0.45','opacity: 0.60','opacity: 0.75','opacity: 0.90'];
+  function showFeatureWiseOrders(){
+	var data4 = new google.visualization.DataTable();
+	// Declare columns
+    data4.addColumn('string', 'Feature');
+    data4.addColumn('number', 'Orders');
+    data4.addColumn({ type : 'number', role: 'annotation' });
+    data4.addColumn({ type : 'string', role: 'style' });
+    for(var i = FeatureWiseOrder.length - 1; i >= 0; i--)
+    {
+    	data4.addRows([[FeatureWiseOrder[i].Feature,FeatureWiseOrder[i].Value,FeatureWiseOrder[i].Value,columnColors[i]]]);
+    }
+    var options = {
+    	title:'ORDERS',
+        titleTextStyle: {
+        	fontSize: 15,
+        },
+        legend: 'none',
+      
+        hAxis:{title: 'Feature',
+        	titleTextStyle: {
+                bold: true,
+                italic: false
+        	}
+         },
+        vAxis: { 
+        	title: 'Orders',
+            format:moneyformate,
+            titleTextStyle: {
+                bold: true,
+                italic: false
+        	}
+        },
+      	 backgroundColor: '#E0E0E0',
+      	 colors: ['#FF6619'],
+       };
+       var chart = new google.visualization.ColumnChart(document.getElementById('FeatureWise_order_chart_div'));
+       chart.draw(data4, options);    
+  }
+  var columnColors2 =["#3399FF","#99CCFF","#66B2FF","#7CB9E8"];
+  function showFeatureWiseCommission(){
+	var data5 = new google.visualization.DataTable();
+	// Declare columns
+    data5.addColumn('string', 'Feature');
+    data5.addColumn('number', 'Value');
+    data5.addColumn({ type : 'number', role: 'annotation' });
+    data5.addColumn({ type : 'string', role: 'style' });
+    for(var i = FeatureWiseCommission.length - 1; i >= 0; i--)
+    {
+    	data5.addRows([[FeatureWiseCommission[i].Feature,FeatureWiseCommission[i].Value,FeatureWiseCommission[i].Value,columnColors2[i]]]);
+    }
+    var options = {
+    	title:'COMMISSION',
+        titleTextStyle: {
+        	fontSize: 15,
+        },
+        legend: 'none',
+        	hAxis:{title: 'Feature',
+           	titleTextStyle: {
+                bold: true,
+                italic: false
+            	}
+            },
+           	vAxis: { 
+            	title: 'Commission',
+                format:moneyformate,
+                titleTextStyle: {
+                bold: true,
+                italic: false
+                }
+            },
+      	  backgroundColor: '#E0E0E0',
+       };
+       var chart = new google.visualization.ColumnChart(document.getElementById('FeatureWise_commission_chart_div'));
+       chart.draw(data5, options);    
+  }
+
+  
+</script>
+
+<!--Your Clients Code-->
+<script>
+  ClientOrders=[];
+var onSuccessClientOrdersData = function(response,Clientid)
+{
+   console.log(response.clientallorders);
+  for(var data in response)
+  {
+    if(response[data].data.clientallorders != 0 && response[data].clientId==Clientid)
+       { 
+        
+         var rows = '<tr>'+
+            '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Order Number </th>'+
+            '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Order Date</th>'+
+      '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Subtotal</th>'+
+            '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Status</th>'+
+        '<th colspan="3" data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Product Details</th></tr>';
+     var items='';
+         var quantity='';
+         var price='';
+         for(var order in response[data].data.clientallorders)
+           { 
+          items='';
+              quantity='';
+              price='';
+             items+='<li><b>Product Title</b></li>';
+             quantity+='<b><li>Quantity</b></li>';
+             price+='<b><li>Price</b></li>';
+             
+             for(var item in response[data].data.clientallorders[order].lineitems)
+             {
+               if(response[data].data.clientallorders[order].lineitems[item].title!= "")
+                {
+                  items+='<li>'+response[data].data.clientallorders[order].lineitems[item].title+'</li>'
+                  quantity+='<li>'+response[data].data.clientallorders[order].lineitems[item].quantity+'</li>'
+                  price+='<li>'+response[data].data.clientallorders[order].lineitems[item].price+'</li>'
+                }
+             }
+              var orderDate = new Date(parseInt(response[data].data.clientallorders[order].created_at.replace('/Date(', '')));
+                rows += '<tr id="row' + i +'" class = "class="Polaris-DataTable__TableRow"">'+
+                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+(response[data].data.clientallorders[order].order_number)+'</td>'+
+                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+(orderDate.toLocaleDateString())+'</td>'+
+                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+(response[data].data.clientallorders[order].subtotal_price.toFixed(2))+'</td>'+
+                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+(response[data].data.clientallorders[order].financial_status)+'</td>'+
+                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;"><ul>'+items+'</ul></td>'+
+                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;"><ul>'+quantity+'</ul></td>'+
+                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;"><ul>'+price+'</ul></td></tr>';
+             
+           }        
+              $("#norepclientorder").hide();
+              $("#Clientdetails").hide();
+              $("#ViewRepClientOrders").show();
+              $("#ViewRepClientOrdersDetails").show();
+              document.getElementById( 'ViewRepClientOrdersDetails' ).innerHTML = rows;
+           break;
+       }
+    else
+       {     
+          $("#Clientdetails").hide();
+          $("#ViewRepClientOrders").show();
+          $("#norepclientorder").show();
+      $("#ViewRepClientOrdersDetails").hide();       
+       }
+    
+  }
+    
+  
+}
+
+var ClientOrdersDetails = function(Clientid,ClientName)
+{  
+  if(ClientOrders.length==0)
+  {
+    var urlVal=window.location.protocol +"//"+ window.location.hostname +"/apps/SalesRep?customerId="+Clientid+"&customerName="+ClientName+"&data=12";
+    $.get(
+          urlVal,
+          function (data, status) {  
+            ClientOrders.push({
+                "clientId" :Clientid , 
+                "data" :  data,
+            });
+          onSuccessClientOrdersData(ClientOrders,Clientid)         
+     });
+  }
+  else if(ClientOrders.length>0)
+  {
+    if(ClientOrders.find(x => x.clientId === Clientid))
+    {
+          onSuccessClientOrdersData(ClientOrders,Clientid)   
+    }
+    else
+    {
+      var urlVal=window.location.protocol +"//"+ window.location.hostname +"/apps/SalesRep?customerId="+Clientid+"&customerName="+ClientName+"&data=12";
+          $.get(
+            urlVal,
+            function (data, status) {  
+            ClientOrders.push({
+                "clientId" :Clientid , 
+                "data" :  data,
+            });
+          onSuccessClientOrdersData(ClientOrders,Clientid)         
+        });
+      
+    }
+  }                              
+}
+
+var BacktoYourClientPage = function(){
+                $("#Clientdetails").show();
+                  $("#ViewRepClientOrders").hide();
+       }
+var onSuccessOrderProducts=function(response,textStatus)
+{
+  var rows = "";
+    for(var item in response.ProductDetails)
+    {  
+        if(Number.isInteger(parseInt(item)))
+        {
+        $('#OrdersSubtotal').html(moneyformate +response.singleOrderDetailsFromShopify.subtotal_price.toFixed(2));
+        $('#OrdersTax').html(moneyformate +parseFloat(response.singleOrderDetailsFromShopify.total_tax).toFixed(2));
+        $('#OrderTotal').html(moneyformate +response.singleOrderDetailsFromShopify.total_price.toFixed(2));
+        $('#OrdersShipping').html(moneyformate +parseFloat(response.singleOrderDetailsFromShopify.total_shipping_price_set.shop_money.amount).toFixed(2));
+      var shipDate = response.ProductDetails[item].ship_date == undefined || response.ProductDetails[item].ship_date == null ? "" : response.ProductDetails[item].ship_date;
+      var trackingNo = response.ProductDetails[item].trackingNumber == undefined || response.ProductDetails[item].trackingNumber == null ? "" : response.ProductDetails[item].trackingNumber;
+      var discountedPrice = response.ProductDetails[item].discountedPrice == undefined || response.ProductDetails[item].discountedPrice == null ? "0" : response.ProductDetails[item].discountedPrice;
+      var refundedQuantity = response.ProductDetails[item].refundedQuantity == undefined || response.ProductDetails[item].refundedQuantity == null ? "0" : response.ProductDetails[item].refundedQuantity;
+      var totalPrice = response.ProductDetails[item].discountedPrice == undefined || response.ProductDetails[item].discountedPrice == null || response.ProductDetails[item].discountedPrice == "0" ? response.ProductDetails[item].quantity * response.ProductDetails[item].ItemPrice : response.ProductDetails[item].quantity * response.ProductDetails[item].discountedPrice;        
+        
+      $('#orderRefendedAmount').html(moneyformate+""+parseFloat(refundedQuantity).toFixed(2));
+         
+         rows += '<tr class = "class="Polaris-DataTable__TableRow"">'+
+              '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;"><img  style="height: 75px;" src='+response.ProductDetails[item].Image+' height="100"></td>'+
+                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+response.ProductDetails[item].Title+'<br>';
+                  if(response.ProductDetails[item].LineItemproperties != null && response.ProductDetails[item].LineItemproperties.length != 0)
+                  {
+                    for(var lineItem in response.ProductDetails[item].LineItemproperties)
+                    {
+                      rows += '<span>'+response.ProductDetails[item].LineItemproperties[lineItem].name+' : '+response.ProductDetails[item].LineItemproperties[lineItem].value+'</span><br>';
+                    }
+                  }
+			  rows += '</td>'+
+              '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+response.ProductDetails[item].variantTitle+'</td>'+
+              '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+response.ProductDetails[item].SKU+'</td>'+
+                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+response.ProductDetails[item].quantity+'</td>'+
+//              '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+moneyformate+refundedQuantity.toFixed(2)+'</td>'+
+                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+moneyformate+parseFloat(response.ProductDetails[item].ItemPrice).toFixed(2)+'</td>'+
+                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+moneyformate+discountedPrice.toFixed(2)+'</td>'+
+              '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+trackingNo+'</td>'+
+              '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+shipDate+'</td>'+
+                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+moneyformate+totalPrice.toFixed(2)+'</td></tr>';
+
+        }
+    }
+    return rows; 
+}
+
+var showModelData = function(Id, flag = "orderId",RefundId = null)
+{
+  $('#DraftOrdersIdRow').hide()  
+  $('#modalDialog').show();
+  $('#PopuploadGif').show();
+  document.getElementById( 'ViewProductModel' ).innerHTML = "";
+  $('#OrdersSubtotal').html("");
+  $('#OrdersTax').html("");
+  $('#OrdersShipping').html("");
+  $('#OrderTotal').html("");
+  $('#orderNote').html("");
+  $('#Polaris-Modal-Dialog__Modal').css({ 'max-width': '100%','margin-top':'0%'});
+
+    if(flag=="clientId")
+    {
+     document.getElementById( 'popupTitle' ).scrollIntoView();
+     $("#popupTitle").html("CUSTOMER DETAILS");
+     $('#orderAmountDetailsOnPopup').hide();
+        urlVal=window.location.protocol +"//"+ window.location.hostname +"/apps/SalesRep?customerId={{customer.id}}&customerName={{customer.first_name}}&clientId="+Id+"&data=25";
+               $.get(
+               urlVal,
+               function (data, status) {
+                      var rows = '<tr  class="Polaris-DataTable__TableRow">'+
+                             '<th class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" scope="col" aria-disabled="true" align="left" width="100">Name</th>'+
+                             '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric">'+data.SingleClientOrders.ClientName+'</td>'+
+                             '</tr>'+
+                          '<tr>'+
+                             '<th class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" scope="col" aria-disabled="true" align="left">Email</th>'+
+                             '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+data.SingleClientOrders.CustomerMailid+'</td>'+
+                          '</tr>'+
+                          '<tr>'+
+                             '<th class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" scope="col" aria-disabled="true" align="left">Phone No.</th>'+
+                             '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+data.SingleClientOrders.phoneno+'</td>'+
+                          '</tr>'+
+                          '<tr>'+
+                             '<th class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" scope="col" aria-disabled="true" align="left">Address</th>'+
+                             '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+(data.SingleClientOrders.address1 == null ? "" : data.SingleClientOrders.address1)+'</td>'+
+                          '</tr>'+
+                          '<tr>'+
+                             "<th class='Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric' scope='col' aria-disabled='true' align='left'>Company Name</th>"+
+                             '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+(data.SingleClientOrders.companyName == null ? "" : data.SingleClientOrders.companyName) +'</td>'+
+                          '</tr>'+
+                          '<tr>'+
+                             '<th class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" scope="col" aria-disabled="true" align="left">Customers Notes </th>'+
+                             '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+(data.SingleClientOrders.notes == null ? "" :data.SingleClientOrders.notes)+'</td>'+
+                          '</tr>'+
+                          '<tr>'+
+                             '<th class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" scope="col" aria-disabled="true" align="left">Total Spent(Subtotal+Tax)</th>'+
+                             '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+moneyformate+data.SingleShopifyCustomers.shopifyTotalSpent.toFixed(2) +'</td>'+
+                          '</tr>'+
+                          '<tr>'+
+                             '<th class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" scope="col" aria-disabled="true" align="left">Number of Orders</th>'+
+                             '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+data.SingleClientOrders.shopifyOrdersCount +'</td>'+
+                          '</tr>'+
+                          '<tr>'+
+                             '<th class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" scope="col" aria-disabled="true" align="left">Tags</th>'+
+                             '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+(data.SingleClientOrders.tags == null ? "" :data.SingleClientOrders.tags) +'</td>'+
+                          '</tr>';
+               $('#ViewProductModel').html(rows);
+               $('#PopuploadGif').hide();
+           }
+         );          
+    }
+    else if(flag == "draftId")
+    {
+       $("#popupTitle").html("DRAFT ORDER DETAILS");
+      var urlVal = window.location.protocol +"//"+ window.location.hostname +"/apps/SalesRep?customerId={{customer.id}}&customerName={{customer.first_name }}&orderId="+Id+"&data=20";
+      $.get(
+        urlVal,
+        function (response, status) {  
+          var rows = '<tr>'+
+              '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;"></th>'+
+              '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Product Name</th>'+
+              '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Size</th>'+
+              '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Quantity</th>'+
+              '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Price</th>'+
+              '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Status</th>'+
+              '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Subtotal</th></tr>';
+          for(var item in response.ProductDetails)
+          { 
+            if(Number.isInteger(parseInt(item)))
+            {
+              var subTotalPrice=response.ProductDetails[item].quantity*response.ProductDetails[item].ItemPrice;
+              rows += '<tr class="Polaris-DataTable__TableRow">'+
+                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;"><img src='+response.ProductDetails[item].Image+' height="100"></td>'+
+                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;"><span>'+response.ProductDetails[item].Title+'</span><br>';
+                  if(response.ProductDetails[item].LineItemproperties != null && response.ProductDetails[item].LineItemproperties.length != 0)
+                  {
+                    for(var lineItem in response.ProductDetails[item].LineItemproperties)
+                    {
+                      rows += '<span>'+response.ProductDetails[item].LineItemproperties[lineItem].name+' : '+response.ProductDetails[item].LineItemproperties[lineItem].value+'</span><br>';
+                    }
+                  }
+			  rows += '</td>'+
+                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;"><span>'+response.ProductDetails[item].size+'</span></td>'+
+                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;text-transform: capitalize;">'+response.ProductDetails[item].quantity+'</td>'+
+                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">$ '+parseFloat(response.ProductDetails[item].ItemPrice).toFixed(2)+'</td>'+
+                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+response.ProductDetails[item].fulfillmentStatus+'</td>'+
+                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">$ '+parseFloat(subTotalPrice).toFixed(2)+'</td></tr>';
+            }
+          }
+          $('#ViewProductModel').html(rows);
+          $('#PopuploadGif').hide();
+          $('#orderAmountDetailsOnPopup').show();
+          $('#DraftOrdersIdRow').show();
+          $('#DraftOrdersId').html(response.draftOrder.id);
+          $('#OrdersSubtotal').html(moneyformate +parseFloat(response.draftOrder.subtotal_price).toFixed(2));
+          $('#OrdersTax').html(moneyformate +parseFloat(response.draftOrder.total_tax).toFixed(2));
+          $('#OrdersShipping').html(moneyformate +parseFloat(response.draftOrder.shipping_line.price).toFixed(2));
+          $('#OrderTotal').html(moneyformate +parseFloat(response.draftOrder.total_price).toFixed(2));
+          $('#orderNote').html(response.draftOrder.note);
+          $('#OrdersSubtotal').html(moneyformate +parseFloat(response.draftOrder.subtotal_price).toFixed(2));
+     });
+    }
+    else if(flag == "clientIdForClientAllOrders")
+  	{
+      document.getElementById( 'popupTitle' ).scrollIntoView();
+       $("#popupTitle").html("Client Orders");
+       $('#orderAmountDetailsOnPopup').hide();
+    	var urlVal=window.location.protocol +"//"+ window.location.hostname +"/apps/SalesRep?customerId="+Id+"&data=12";
+        $.get(
+              urlVal,
+              function (data, status) {
+                if(data.clientallorders != null && data.clientallorders != "undefined" && data.clientallorders != "" && data.clientallorders.length != 0)
+                { 
+                    rows += onSuccessShowClientOrders(data, status); 
+                  	$('#ViewProductModel').html(rows);
+                }
+                else{
+                 $('#ViewProductModel').html("No Orders");
+                }
+                $('#PopuploadGif').hide();
+
+     });
+    }
+   else if(flag == "ShowCommissionList")
+  	{
+      $('#orderAmountDetailsOnPopup').hide(); 
+      $("#popupTitle").html("Commission List");  
+     DisplayCommisionDiscount(serverData);
+       $('#PopuploadGif').hide();
+       $('#Polaris-Modal-Dialog__Modal').css({ 'max-width': '50%','margin-top':'10%'});
+      if (window.matchMedia('(max-width: 767px)').matches)
+     {
+       $('#Polaris-Modal-Dialog__Modal').css({ 'max-width': '100%','margin-top':'10%'});
+      }
+    }
+  
+  //RefundOrder Popup
+   else if(flag == "RefundOrderNumber")
+  	{
+     
+      $("#popupTitle").html("Refund Order Details");
+       $('#orderAmountDetailsOnPopup').hide();
+    	var urlVal=window.location.protocol +"//"+ window.location.hostname +"/apps/SalesRep?customerId={{customer.id}}&orderId="+Id+"&refundId="+RefundId+"&data=35";
+      
+     $.get(
+        urlVal,
+        function (response, status) {  
+          var rows = '<tr>'+
+              '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Name </th>'+
+              '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Quantity </th>'+
+              '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Discount Price  ('+moneyformate+')</th>'+
+              '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">SubTotal  ('+moneyformate+')</th></tr>';
+      
+     if(response.refunds.refund_line_items != undefined || response.refunds.refund_line_items != null || response.refunds.refund_line_items !='')
+        
+     {
+          for(var item in response.refunds.refund_line_items)
+           { 
+         
+        var Title = response.refunds.refund_line_items[item].line_item.title == undefined || response.refunds.refund_line_items[item].line_item.title == null ? "" : response.refunds.refund_line_items[item].line_item.title ;
+        var Quantity = response.refunds.refund_line_items[item].line_item.quantity == undefined || response.refunds.refund_line_items[item].line_item.quantity == null ? "": response.refunds.refund_line_items[item].line_item.quantity ;
+        var Total_Discount = response.refunds.refund_line_items[item].line_item.total_discount == undefined || response.refunds.refund_line_items[item].line_item.total_discount == null ? "" : response.refunds.refund_line_items[item].line_item.total_discount ;
+        var Subtotal = response.refunds.refund_line_items[item].subtotal == undefined || response.refunds.refund_line_items[item].subtotal == null ? "" : response.refunds.refund_line_items[item].subtotal;
+             
+              rows += '<tr class="Polaris-DataTable__TableRow">'+
+                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+Title+'</td>'+
+                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+Quantity+'</td>'+
+                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+moneyformate+parseFloat(Total_Discount).toFixed(2)+'</td>'+
+                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+moneyformate+parseFloat(Subtotal).toFixed(2)+'</td></tr>';
+           }
+        }
+         else
+       {
+          
+          rows += '<tr id="row" class="Polaris-DataTable__TableRow" >'+
+          '<td colspan="4" style="text-align:center;">[TABLEDATAERROR]</td></tr>';
+       }
+        
+           $('#ViewProductModel').html(rows);
+           $('#PopuploadGif').hide();
+      });
+    }
+  
+    else
+    {
+   $("#popupTitle").html("Product Details");
+
+
+   var rows = '<tr>'+
+        '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Product</th>'+
+        '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Title</th>'+
+        '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Variant Title</th>'+
+        '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">SKU</th>'+
+        '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Quantity</th>'+
+//      '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Refunded Amount ('+moneyformate+')</th>'+
+        '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Item Price ('+moneyformate+')</th>'+
+        '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">discounted Price ('+moneyformate+')</th>'+
+        '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Tracking Number</th>'+
+        '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Ship Date</th>'+
+        '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Total Price ('+moneyformate+')</th></tr>';
+     
+      if(flag == "orderNumber")
+      {
+        var isPresentInProductArray=false;
+        for(var item in ProductsArray)
+        {                
+          if(Number.isInteger(parseInt(item)) && ProductsArray[item].OrderNumber==Id)
+          {
+            isPresentInProductArray = true;
+            $('#OrdersSubtotal').html(ProductsArray[item].subtotal);
+            $('#OrdersTax').html(ProductsArray[item].tax);
+            $('#OrdersShipping').html(ProductsArray[item].shipping);
+            $('#OrderTotal').html(ProductsArray[item].total);
+            $('#orderNote').html(ProductsArray[item].note);
+            $('#orderRefendedAmount').html(moneyformate +parseFloat(ProductsArray[item].totalRefundedAmount).toFixed(2));         
+            var discountedPrice = ProductsArray[item].discountedTotalPrice == undefined || ProductsArray[item].discountedTotalPrice == null || ProductsArray[item].discountedTotalPrice == "0.00" ? moneyformate +" 0.00" : moneyformate+" " + ProductsArray[item].discountedTotalPrice;
+            var totalPrice = ProductsArray[item].discountedTotalPrice == undefined || ProductsArray[item].discountedTotalPrice == null || ProductsArray[item].discountedTotalPrice == "0.00" ? ProductsArray[item].quantity * ProductsArray[item].price : (ProductsArray[item].quantity * ProductsArray[item].price) - ProductsArray[item].discountedTotalPrice;
+			var trackingNumber = ProductsArray[item].TrackingNumber == undefined || ProductsArray[item].TrackingNumber == null || ProductsArray[item].TrackingNumber == 0 ? "" : ProductsArray[item].TrackingNumber;
+            rows += '<tr class = "class="Polaris-DataTable__TableRow"">'+
+                    '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+ProductsArray[item].image+'</td>'+
+                    '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+ProductsArray[item].title+'</td>'+
+                    '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+ProductsArray[item].variantTitle+'</td>'+
+                    '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+ProductsArray[item].sku+'</td>'+
+                    '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+ProductsArray[item].quantity+'</td>'+
+//                  '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+ moneyformate +' '+ProductsArray[item].totalRefundedAmount+'</td>'+
+                    '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+ moneyformate +' '+ ProductsArray[item].price+'</td>'+
+                    '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+discountedPrice+'</td>'+
+                    '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+trackingNumber+'</td>'+
+                    '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+ProductsArray[item].ShipDate+'</td>'+
+                    '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+ moneyformate +' '+totalPrice.toFixed(2)+'</td></tr>';
+          }
+        }
+     $('#ViewProductModel').html(rows);
+        $('#orderAmountDetailsOnPopup').show();
+        $('#PopuploadGif').hide();
+        }    
+        else
+        {
+          var urlVal = window.location.protocol +"//"+ window.location.hostname +"/apps/SalesRep?customerId={{customer.id}}&customerName={{customer.first_name }}&orderId="+Id+"&data=19";
+          $.get(
+                urlVal,
+                function (data, status) {  
+                rows += onSuccessOrderProducts(data, status);
+         $('#ViewProductModel').html(rows);
+        $('#orderAmountDetailsOnPopup').show();
+        $('#PopuploadGif').hide();
+           });
+        }
+    }
+          
+    }
+    var closeModal = function()
+{
+  $('#modalDialog').hide(); 
+}
+
+    var onSuccessSubmit = function (response,textStatus)
+    {
+      if(response == false)
+      {
+        $("#errorsmsg").show();
+        $("#successmsg").hide();
+      }
+      else
+      {
+        $("#successmsg").show();
+        $("#errorsmsg").hide();
+      }
+    $("#addsalesrep").html("Add SalesRep");
+    }
+  
+  var AddSalesRep = function(){
+    var url_string = window.location.href;
+    var url = new URL(url_string);
+    var ManagerId = url.searchParams.get("manager");
+
+    if (!ManagerId) {
+        ManagerId = url.searchParams.get("MANAGER");
+    }
+    
+    if(document.getElementById("sr_salesrep_email").value==""){
+        $('#emailerror').show();
+      }     
+      else if(document.getElementById("sr_salesrep_firstname").value==""){
+        $('#fnameerror').show();
+      }
+      
+      else{
+        $("#addsalesrep").html("Adding SalesRep...");        
+    $("#errorsmsg").hide();
+    $("#successmsg").hide();
+        
+        var email = document.getElementById("sr_salesrep_email").value;
+        var fname = document.getElementById("sr_salesrep_firstname").value;
+        var lname = document.getElementById("sr_salesrep_lastname").value;
+        
+        var SalesRepId;
+    {% if customer %}
+      SalesRepId = {{customer.id}};
+    {% else %}
+      SalesRepId = "";
+    {% endif %}
+        
+         var TeamManagerName="{{customer.first_name}} {{customer.last_name}}"
+      
+      var user = {
+        "salesrepId" : SalesRepId,
+          "email" : email,
+            "name" : fname,
+            "TeamManagerName": TeamManagerName,
+            "Lname": lname,
+          "IsTeamManager":true,
+      }
+        console.log(user);
+        var data = JSON.stringify(user);
+        var urlVal = window.location.protocol +"//"+ window.location.hostname +"/apps/SalesRep?pageIndex=21&data="+data;
+        console.log(urlVal);
+        $.post(
+          urlVal,
+        function (data, status) {                 
+             onSuccessSubmit(data, status);                            
+          }
+      );
+      }
+  }
+
+  var ShowSharedCartProducts=function(productarray,filter)
+    {
+        if(filter)
+        {
+            var orderRow = '<tr>'+
+            '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;"> </th>'+
+            '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Image</th>'+
+            '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Add Quantity</th>'+
+            '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Title</th>'+
+            '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Variant Title</th>'+
+            '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Price</th></tr>';
+      
+                        for(var product in productarray)
+                        {
+                            for(var variant=0;productarray[product].variants.length>variant;variant++)
+                            {
+                            var productprice =productarray[product].variants[variant].price/100;
+                                orderRow += '<tr class="Polaris-DataTable__TableRow">'+
+                                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+
+                                '<img class="sr_productImage plusIcon" src="{{ 'plusIcon.png' | asset_url }}" style="cursor: pointer;" onclick="AddProductToSharedCart(\''+productarray[product].title+'\',\''+productprice+'\',\''+productarray[product].images+'\',\''+productarray[product].type+'\',\''+productarray[product].variants[variant].id+'\',\''+productarray[product].variants[variant].option1+'\',\''+productarray[product].variants[variant].available+'\')"></td>'+                 
+                                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;"><img class="sr_productImage" style="width:60px;" src="'+productarray[product].images+'"></td>'+
+                                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;"><input type="text" style="width:90px;" id="quantity_'+productarray[product].variants[variant].id+'" placeholder="Quantity"></td>'+
+                                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+productarray[product].title+'</td>'+
+                                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+productarray[product].variants[variant].title+'</td>'+     
+                                '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+productprice+  " " +currency+'</td></tr>';                                                  
+                                 
+                            }
+                        }
+                                                                                                                                                    
+                        document.getElementById('Carttable').innerHTML = orderRow; 
+                        $('#SharedCarttable').show();
+                        $("#SharedCartSpinner").hide(); 
+            }
+        else 
+        {
+            $('#SharedCarttable').hide();     
+        }                                        
+   } 
+
+    var showAllSharedCart = function(data)
+    {
+        if(data.select.CartSharing)
+              {
+               var row = '<tr>'+
+                '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric number" scope="col" style="height: 54px;">Cart Name</th>'+
+                '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric number" scope="col" style="height: 54px;">Sharable Cart Link</th>' +
+                '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric number" scope="col" style="height: 54px;">Copy Cart Link</th>' +
+                '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric number" scope="col" style="height: 54px;">Delete Cart Link</th>';
+             if(data.SharedCartDetails != undefined && data.SharedCartDetails != null && data.SharedCartDetails.length > 0)
+             {
+                for(var i = 0; i < data.SharedCartDetails.length; i++)
+              {
+                row += '<tr id="row" class = "class="Polaris-DataTable__TableRow"">'+             
+                     '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric commission" style="height: 72px;">'+(data.SharedCartDetails[i].CartName)+'</td>'+
+                     '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric commission" style="height: 72px;"><a href="' + (data.SharedCartDetails[i].CartUrl.toLowerCase()) + '"; target="_blank"; id="sharedcartlink' + i + '" style="color:blue;text-transform: lowercase !important;" >' + (data.SharedCartDetails[i].CartUrl.toLowerCase()) + '</a></td>' +
+                  '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;"><div><div class="Polaris-ButtonGroup__Item"><button type="button" id="copysharedcart' + i + '" class="Polaris-Button Polaris-Button--primary" style="font-size:18px;padding-left: 35px;padding-right: 35px;" onclick="CopySharedCartLink(\''+ i + '\')"><span class="Polaris-Button__Content"><span>Copy Cart Link</span></span></button></div></div></td>'+
+                     '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;"><div><div class="Polaris-ButtonGroup__Item"><button type="button" id="deletesharedcart' + i + '" class="Polaris-Button Polaris-Button--primary" style="font-size:18px;padding-left: 35px;padding-right: 35px;" onclick="DeleteSharedCartLink(\'' + data.SharedCartDetails[i].CartUniqueId + '\',\'' + data.SharedCartDetails[i].ShopName + '\',\'' + i + '\')"><span class="Polaris-Button__Content"><span>Delete Cart Link</span></span></button></div></div></td>';
+              }
+             }
+               else
+               {
+                 $("#noSharedCartDetails").show();
+               }
+                document.getElementById('existingSharedCartDetails').innerHTML = row;
+      }
+    }
+      
+function CopySharedCartLink(idNum) {
+  let element = document.getElementById("sharedcartlink"+idNum); //select the element
+  let elementText = element.textContent; //get the text content from the element
+  navigator.clipboard.writeText(elementText);
+  $('#copysharedcart' + idNum).text('Copied!!');
+  setTimeout(function () { $('#copysharedcart' + idNum).text('Copy Cart Link');  }, 3000);
+}
+</script>
+<script>
+function openTab(evt, tabName) {
+  if(tabName == "YourPreviousOrders")
+  {
+    ViewInvoiceOrders();
+  }
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(tabName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+</script>
+<script>
+  var mybutton = document.getElementById("scrollToTop");
+
+// When the user scrolls down 20px from the top of the document, show the button
+window.onscroll = function() {scrollFunction()};
+
+function scrollFunction() {
+  if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+    mybutton.style.display = "block";
+  } else {
+    mybutton.style.display = "none";
+  }
+}
+
+// When the user clicks on the button, scroll to the top of the document
+function scrollToTopFunction() {
+  
+    document.getElementById('SR_CustomerOrder').scrollIntoView();
+    $(".ToTop").addClass("hide");
+}
+
+</script>
+
+<!-- Order PopUp in MyCustomer Tab -->
+<script>  
+
+var toggelProductTableInMyCustomerTab =function(orderNumber,clientIdForMyCustomer = null, orderIdForMyCustomer = null,clientNameForMyCustomer = null)
+{
+ var RowForNote, Note,RefundAmount;
+  if( $("#seeMyCustomerOrders_"+orderNumber).css('display') == 'none' ) 
+  {  
+  	$("#seeMyCustomerOrders_"+orderNumber).toggle();
+    $('#showOrderList_'+orderNumber).hide();
+    $('#PopuploadGifForToggle_'+orderNumber).show();
+	
+       $("#popupTitle").html(clientNameForMyCustomer.toString() + " orders");
+    
+    var rows='<tr>'+
+        '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Product</th>'+
+        '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Title</th>'+
+        '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Variant Title</th>'+
+        '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">SKU</th>'+
+        '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Quantity</th>'+
+//      '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Refunded Amount ('+moneyformate+')</th>'+
+        '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Item Price ('+moneyformate+')</th>'+
+        '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">discounted Price ('+moneyformate+')</th>'+
+        '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Tracking Number</th>'+
+        '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Ship Date</th>'+
+        '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric" scope="col" style="height: 54px;">Total Price ('+moneyformate+')</th></tr>';
+            
+       
+    	var isPresentInProductArray=false;
+        for(var item in ProductsArray)
+        {                
+          if(Number.isInteger(parseInt(item)) && ProductsArray[item].OrderNumber==orderNumber)
+          {
+            isPresentInProductArray = true;
+
+            $('#orderRefendedAmount').html(moneyformate+parseFloat(ProductsArray[item].totalRefundedAmount).toFixed(2));       
+            RefundAmount = document.getElementById("orderRefendedAmount").innerHTML;
+           
+           Note = ProductsArray[item].note != undefined && ProductsArray[item].note != null && ProductsArray[item].note != "" ? ProductsArray[item].note : "No notes from customer";
+            RowForNote = '<tr style="border:1px solid black;background-color:#FFFF"><td colspan=10><p><b>Note : </b><span id="ProductRowNote_+'+orderNumber+'">'+Note+'</span></p> <p><b>Refunded Amount:</b> '+RefundAmount+'</p> </td></tr><tr>';
+            var discountedPrice = ProductsArray[item].discountedTotalPrice == undefined || ProductsArray[item].discountedTotalPrice == null || ProductsArray[item].discountedTotalPrice == "0.00" ? moneyformate +" 0.00" : moneyformate+" " + ProductsArray[item].discountedTotalPrice;
+            var totalPrice = ProductsArray[item].discountedTotalPrice == undefined || ProductsArray[item].discountedTotalPrice == null || ProductsArray[item].discountedTotalPrice == "0.00" ? ProductsArray[item].quantity * ProductsArray[item].price : (ProductsArray[item].quantity * ProductsArray[item].price) - ProductsArray[item].discountedTotalPrice;
+			var trackingNumber = ProductsArray[item].TrackingNumber == undefined || ProductsArray[item].TrackingNumber == null || ProductsArray[item].TrackingNumber == 0 ? "" : ProductsArray[item].TrackingNumber;
+            var ShipDate = new Date(ProductsArray[item].ShipDate);
+            ShipDate = ShipDate.getDate()+"/"+ShipDate.getMonth()+1+"/"+ShipDate.getFullYear();
+            
+            rows += '<tr class = "class="Polaris-DataTable__TableRow"">'+
+                    '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+ProductsArray[item].image+'</td>'+
+                    '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+ProductsArray[item].title+'</td>'+
+					'<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+ProductsArray[item].variantTitle+'</td>'+
+              		'<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+ProductsArray[item].sku+'</td>'+
+                    '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+ProductsArray[item].quantity+'</td>'+   
+//                  '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+ moneyformate +' '+ProductsArray[item].totalRefundedAmount+'</td>'+
+                    '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+ moneyformate +' '+ ProductsArray[item].price+'</td>'+
+                    '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+discountedPrice+'</td>'+
+                    '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+trackingNumber+'</td>'+
+                    '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+ShipDate+'</td>'+
+                    '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+ moneyformate +' '+totalPrice.toFixed(2)+'</td></tr>';
+ 
+        
+          }          
+        }
+
+       if(!isPresentInProductArray && clientIdForMyCustomer != null && orderIdForMyCustomer != null)
+            {    
+              
+                    var urlVal = window.location.protocol +"//"+ window.location.hostname +"/apps/SalesRep?customerId="+clientIdForMyCustomer+"&orderId="+orderIdForMyCustomer+"&data=19";
+                    $.get(
+                          urlVal,
+                          function (data, status) { 
+                            if(data != null){ 
+                          		rows += onSuccessOrderProducts(data, status); 
+                            }  
+                            RefundAmount = document.getElementById("orderRefendedAmount").innerHTML;
+                            var Note = data.singleOrderDetailsFromShopify.note != "" && data.singleOrderDetailsFromShopify.note != null && data.singleOrderDetailsFromShopify.note != undefined ? data.singleOrderDetailsFromShopify.note : "No notes from customer";
+                            var RowForNote = '<tr style="border:1px solid black;background-color:#FFFF"><td colspan=10><p><b>Note : </b><span id="ProductRowNote_+'+orderNumber+'">'+Note+'</span></p> <p><b>Refunded Amount:</b> '+RefundAmount+'</p> </td></tr><tr>';
+                            $('#PopuploadGifForToggle_'+orderNumber).hide();                           
+                          	rows = RowForNote + rows;
+                            document.getElementById('showOrderList_'+orderNumber).innerHTML = rows;
+                            $('#showOrderList_'+orderNumber).show();
+                     });                      
+            }
+       	 else{
+        	
+           		rows = RowForNote + rows;
+        		$('#PopuploadGifForToggle_'+orderNumber).hide();
+	            document.getElementById('showOrderList_'+orderNumber).innerHTML = rows;
+                $('#showOrderList_'+orderNumber).show();
+       } 		
+        	
+  }
+  else
+  {
+  	$("#seeMyCustomerOrders_"+orderNumber).toggle();
+  }
+}  
+  
+var onSuccessShowClientOrders = function(data, status) 
+{
+  if(data.clientallorders != null && data.clientallorders != "undefined" && data.clientallorders != "")
+            {              
+              var ProductRow = '<tr>'+
+          '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric Order" scope="col" style="height: 54px;width: 15.5rem;">Order Number</th>'+
+          '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric Date" scope="col" style="height: 54px;">Order Date</th>'+
+          '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric Payment" scope="col" style="height: 54px;">Payment</th>'+
+          '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric Fulfillment" scope="col" style="height: 54px;">Fulfillment</th>'+
+          '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric Date" scope="col" style="height: 54px;">SubTotal ('+moneyformate+')</th>'+
+          '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric Payment" scope="col" style="height: 54px;">Shipping Cost ('+moneyformate+')</th>'+
+          '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric Fulfillment" scope="col" style="height: 54px;">Tax ('+moneyformate+')</th>'+
+          '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric Total" scope="col" style="height: 54px;">Total ('+moneyformate+')</th></th></tr>';  
+           
+              for(var item in data.clientallorders)
+              {
+                var tax = parseFloat(GetValidString(data.clientallorders[item].total_tax, true)).toFixed(2);
+                var shipping = parseFloat(GetValidString(data.clientallorders[item].shippingCharges, true)).toFixed(2);
+                var OrderDate = data.clientallorders[item].created_at == undefined || data.clientallorders[item].created_at == null? "" : new Date(parseInt(data.clientallorders[item].created_at.replace('/Date(', '')));  
+              	ProductRow += '<tr class = "class="Polaris-DataTable__TableRow"">'+
+          '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric month" style="height: 72px;"><u><a style="color:blue;" href="javascript:void(0)" onclick="toggelProductTableInMyCustomerTab('+data.clientallorders[item].order_number+','+data.clientallorders[item].customers.id+','+data.clientallorders[item].order_id+','+"'"+''+data.clientallorders[item].customers.first_name+''+"'"+')">'+data.clientallorders[item].order_number+'</a></u></td>'+ 
+          '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric date" style="height: 72px;">'+(OrderDate.toLocaleDateString())+'</td>'+
+          '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric financial" style="height: 72px;">'+data.clientallorders[item].financial_status+'</td>'+
+          '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric fulfillment" style="height: 72px;">'+data.clientallorders[item].fulfillment_status+'</td>'+
+          '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric date" style="height: 72px;">'+moneyformate+data.clientallorders[item].subtotal_price.toFixed(2)+'</td>'+
+          '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric financial" style="height: 72px;">'+moneyformate + shipping+'</td>'+
+          '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric fulfillment" style="height: 72px;">'+moneyformate + tax +'</td>'+
+          '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric total" style="height: 72px;">'+moneyformate+data.clientallorders[item].total_price.toFixed(2)+'</td></tr>'+
+          '<tr id="seeMyCustomerOrders_'+data.clientallorders[item].order_number+'" style="display:none;"><td colspan=8><div style ="max-height: 20rem;min-height: 6rem; overflow-y: auto;"><center><div id="PopuploadGifForToggle_'+data.clientallorders[item].order_number+'" style="display:none;--top-bar-background:rgb(28, 34, 96); --top-bar-color:#f9fafb; --top-bar-background-darker:rgb(0, 8, 75); --top-bar-background-lighter:rgb(67, 70, 127);"><svg viewBox="0 0 44 44" class="Polaris-Spinner Polaris-Spinner--colorTeal Polaris-Spinner--sizeLarge" role="status"><path d="M15.542 1.487A21.507 21.507 0 0 0 .5 22c0 11.874 9.626 21.5 21.5 21.5 9.847 0 18.364-6.675 20.809-16.072a1.5 1.5 0 0 0-2.904-.756C37.803 34.755 30.473 40.5 22 40.5 11.783 40.5 3.5 32.217 3.5 22c0-8.137 5.3-15.247 12.942-17.65a1.5 1.5 0 1 0-.9-2.863z"></path></svg></div></center><table class="Polaris-DataTable__Table" id="showOrderList_'+data.clientallorders[item].order_number+'" style="display:none;text-align: center; background: aliceblue;"></table></div></td></tr>';        
+		
+              }   
+            }
+            else{
+            	 ProductRow = "No Orders"
+            }
+            return ProductRow; 
+}
+
+//   Refund Orders tab
+  var onSuccessRefunddata = function(response)
+      {
+           var PreviousOrderRow = '<tr>'+
+          '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric " scope="col" style="height: 54px;">Refund Id</th>'+
+          '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric " scope="col" style="height: 54px;">Order Date</th>'+
+          '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric " scope="col" style="height: 54px;">Order Number</th>'+
+//           '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric " scope="col" style="height: 54px;">Order Name</th>'+
+          '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric " scope="col" style="height: 54px;">Commission ('+moneyformate+')</th>'+
+          '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric " scope="col" style="height: 54px;">Team Manager Commission ('+moneyformate+')</th>'+
+          '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric " scope="col" style="height: 54px;">Refund SubTotal ('+moneyformate+')</th>'+
+          '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric " scope="col" style="height: 54px;">Order Status</th>'+
+          '<th data-polaris-header-cell="true" class="Polaris-DataTable__Cell Polaris-DataTable__Cell--header Polaris-DataTable__Cell--numeric " scope="col" style="height: 54px;">Order Type</th></tr>';
+     
+        if(response.allRefundOrdersDetails != undefined && response.allRefundOrdersDetails != null && response.allRefundOrdersDetails.length > 0 )  
+      {
+        for(var cust in response.allRefundOrdersDetails) 
+        {    
+         var newApiDate = new Date(parseInt(response.allRefundOrdersDetails[cust].OrderDate.replace('/Date(', '')));
+         var OrderDate=newApiDate.toLocaleDateString();
+ 
+          var RefundId = response.allRefundOrdersDetails[cust].RefundId == undefined || response.allRefundOrdersDetails[cust].RefundId == null ? "" : response.allRefundOrdersDetails[cust].RefundId ;
+              OrderDate = response.allRefundOrdersDetails[cust].OrderDate == undefined || response.allRefundOrdersDetails[cust].OrderDate == null ? "" : OrderDate ;
+          var ShopifyOrderNumber = response.allRefundOrdersDetails[cust].ShopifyOrderNumber == undefined || response.allRefundOrdersDetails[cust].ShopifyOrderNumber == null ? "" : response.allRefundOrdersDetails[cust].ShopifyOrderNumber;
+//           var OrderName = response.allRefundOrdersDetails[cust].OrderName == undefined || response.allRefundOrdersDetails[cust].OrderName == null ? "" : response.allRefundOrdersDetails[cust].OrderName ;
+          var Commission = response.allRefundOrdersDetails[cust].Commission == undefined || response.allRefundOrdersDetails[cust].Commission == null ? "" : response.allRefundOrdersDetails[cust].Commission ;
+          var TeamManagerCommission = response.allRefundOrdersDetails[cust].TeamManagerCommission == undefined || response.allRefundOrdersDetails[cust].TeamManagerCommission == null ? "" : response.allRefundOrdersDetails[cust].TeamManagerCommission ; 
+          var RefundSubTotal = response.allRefundOrdersDetails[cust].RefundSubTotal == undefined || response.allRefundOrdersDetails[cust].RefundSubTotal == null ? "" : response.allRefundOrdersDetails[cust].RefundSubTotal ;
+          var OrderStatus = response.allRefundOrdersDetails[cust].OrderStatus == undefined || response.allRefundOrdersDetails[cust].OrderStatus == null ? "" : response.allRefundOrdersDetails[cust].OrderStatus ;
+          var OrderType = response.allRefundOrdersDetails[cust].OrderType == undefined || response.allRefundOrdersDetails[cust].OrderType == null ? "" : response.allRefundOrdersDetails[cust].OrderType ;
+      
+         PreviousOrderRow += '<tr id="row" class="Polaris-DataTable__TableRow">'+
+             '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric " style="height: 72px;">'+RefundId+'</td>'+
+             '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric " style="height: 72px;">'+OrderDate+'</td>'+
+             '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric " style="height: 72px;"><u><a style="color:blue" href="javascript:void(0)" onclick=showModelData('+response.allRefundOrdersDetails[cust].orderId+',\'RefundOrderNumber\','+response.allRefundOrdersDetails[cust].RefundId+')>'+ShopifyOrderNumber+'</a></u> </td>'+
+//              '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric " style="height: 72px;">'+OrderName+'</td>'+                                                   
+             '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric " style="height: 72px;">'+moneyformate+parseFloat(Commission).toFixed(2)+'</td>'+
+             '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric " style="height: 72px;">'+moneyformate+parseFloat(TeamManagerCommission).toFixed(2)+'</td>'+
+             '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric " style="height: 72px;">'+moneyformate+parseFloat(RefundSubTotal).toFixed(2)+'</td>'+
+             '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric " style="height: 72px;">'+OrderStatus+'</td>'+
+             '<td class="Polaris-DataTable__Cell Polaris-DataTable__Cell--numeric" style="height: 72px;">'+OrderType+'</td></tr>';
+        }
+      }
+       else
+        {   
+        $("#noYourRefundOrders").show(); 
+       }
+         document.getElementById('ViewRefundOrders').innerHTML = PreviousOrderRow;
+        }
+</script>
+<script>
+  let isAddNewAddressDivOpen = false;
+  
+  var toggelBtn=function() {
+  event.preventDefault();
+  isAddNewAddressDivOpen = !isAddNewAddressDivOpen;
+  $("#newAddr").toggle();
+}
+  function onChangeCountryDD()
+ {
+   $('#statedd').find('option').not(':first').remove();
+   var stateArray = $('#customer_country option:selected').attr("data-provinces"); //JSON.parse($('#customer_country option:selected').attr("data-provinces"));
+   var parsedStateArray = stateArray != undefined && stateArray != null ? JSON.parse(stateArray) : [];
+   var states = "";
+   for(var state in parsedStateArray)
+    {
+     states += '<option value="'+parsedStateArray[state][0]+'">'+ parsedStateArray[state][0]+ '</option>';
+    }
+   $('#statedd').append(states);
+ }
+
+ function RemoveApostropheFromString(givenString)
+  {
+    if(givenString != undefined && givenString != null && givenString != "")
+    {
+      givenString = givenString.replaceAll("'","\\'");
+    }
+    return givenString;
+  }
+  
+   
+  var GetCommissionandDiscountPerProduct = function()
+  {
+    if(CommissionandDiscountPerProduct != null && CommissionandDiscountPerProduct.length==0)
+    {
+      var urlVal=window.location.protocol +"//"+ window.location.hostname +"/apps/SalesRep?customerId=0&data=39";         
+      $.get(
+      urlVal,
+      function (data, status) {  
+      CommissionandDiscountPerProduct = data.CommissionandDiscountPerProduct;           		
+      });
+    }         
+  }
+</script>

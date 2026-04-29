@@ -1,0 +1,134 @@
+.steps-heading {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.steps-grid {
+  display: grid;
+  gap: 40px;
+}
+
+.steps-grid--1 { grid-template-columns: 1fr; }
+.steps-grid--2 { grid-template-columns: repeat(2, 1fr); }
+.steps-grid--3 { grid-template-columns: repeat(3, 1fr); }
+.steps-grid--4 { grid-template-columns: repeat(4, 1fr); }
+.steps-grid--5 { grid-template-columns: repeat(5, 1fr); }
+.steps-grid--6 { grid-template-columns: repeat(6, 1fr); }
+
+.step-item {
+  position: relative;
+  padding-right: 20px;
+}
+
+.step-item:not(:last-child):after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0px;
+    height: 78%;
+    width: 2px;
+    background: #999;
+}
+
+.step-label {
+  font-size: 16px;
+  color: #999;
+  margin-bottom: 20px;
+}
+
+.step-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 30px 0;
+  text-transform: math-auto !important;
+}
+
+.step-desc {
+  font-size: 14px;
+    line-height: 24px;
+}
+
+.steps-btn {
+  text-align: center;
+  margin-top: 40px;
+}
+.way-sec h2.steps-heading {
+    margin-bottom: 80px;
+    text-transform: math-auto;
+    font-weight: 600;
+}
+.steps-btn a.btn:after {
+    background-color: #182A30;
+}
+.testimonial-sec {
+    background-color: #fff;
+}
+.testimonial-sec img {
+    width: 125px;
+}
+.testimonial-sec h3.step-title {
+    font-weight: bold;
+    font-size: 17px;
+}
+
+.testimonial-sec .step-image-2 {
+    margin-top: 30px;
+}
+
+.testimonial-sec .step-image {
+    margin-bottom: 50px;
+}
+
+.testimonial-sec .step-item:not(:last-child):after {
+    display: none;
+}
+
+
+
+@media(max-width:1199px){
+.step-desc {
+    font-size: 13px;
+    line-height: 24px;
+}
+.testimonial-sec h3.step-title {
+    font-size: 17px;
+    line-height: 24px;
+    min-height: 50px;
+}
+.testimonial-sec img {
+    width: 105px;
+}
+}
+@media(max-width:991px){
+.step-item {
+    padding-right: 0;
+}
+.steps-grid {
+    gap: 20px;
+}
+.testimonial-sec h3.step-title {
+    min-height: 72px;
+}
+}
+@media screen and (max-width: 749px) {
+  .steps-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .step-item::after {
+    display: none;
+  }
+}
+@media(max-width:767px){
+.testimonial-sec h3.step-title {
+    min-height: unset;
+    margin: 10px 0;
+}
+.testimonial-sec .step-image {
+    margin-bottom: 10px;
+}
+.testimonial-sec {
+    padding-top: 60px !important;
+    padding-bottom: 60px !important;
+}
+}

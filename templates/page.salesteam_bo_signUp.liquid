@@ -1,0 +1,58 @@
+<div id="customer_country" style="display: none;">{{ country_option_tags }}</div>
+<script>
+  try {
+    var css_customer_country = document.getElementById('customer_country');
+    var css_allCountries = css_customer_country.children;
+    var css_countriesAndStates = {};
+
+    for (var i = 0; i < css_allCountries.length; i++) {
+      var css_country = css_allCountries[i];
+      var css_stateArray = css_country.getAttribute("data-provinces");
+      try {
+        var css_parsedStateArray = css_stateArray ? JSON.parse(css_stateArray) : [];
+        var states = [];
+        for (var j = 0; j < css_parsedStateArray.length; j++) {
+          states.push(css_parsedStateArray[j][0]);
+        }
+        css_countriesAndStates[css_country.value] = states;
+      } catch (error) {
+        console.error('Error parsing JSON for country:', css_country.value, error);
+        continue;
+      }
+    }
+    var css_shopCurrency = "$";
+    var css_currencyCode = "";
+    {% for currency in shop.enabled_currencies %}
+    {% if currency.iso_code == shop.currency %}
+    css_shopCurrency ="{{ currency.symbol }}";
+    css_currencyCode ="{{ currency.iso_code }}";
+    {% break %}
+    {% endif %}
+    {% endfor %}
+    {% assign login_config_raw = shop.metafields.SalesTeamApp.login_page_config.value %}
+    {% if login_config_raw and login_config_raw != blank %}
+    {% assign login_config = login_config_raw | json %}
+    {% endif %}
+    window.salesteam_bo_props = {
+      "baseUrlShopName" : "{{ shop.domain }}",
+      "shopName": window.Shopify.shop,
+      "customerId": "{{customer.id}}",
+      "customerName": "{{customer.name}}",
+      "customerFirstName": "{{customer.first_name }}",
+      "customerLastName": "NA",
+      "customerEmail": "{{customer.email }}",
+      "shopCurrency": css_shopCurrency,
+      "countriesAndStates": css_countriesAndStates,
+      "currency" : css_currencyCode,
+      "loginCustomization": {% if login_config %}{{ login_config | json }}{% else %}null{% endif %}
+    }
+    console.log("check backoffice")
+  } catch (error) {
+    console.error('Error accessing customer_country or shopCurrency:', error);
+  }
+</script>
+
+<div id="css-backoffice" height="900px" width="100%"></div>
+
+{{ 'salesteam-bo.css' | asset_url | stylesheet_tag }}
+{{ 'salesteam-bo.js' | asset_url | script_tag }}

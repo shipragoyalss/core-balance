@@ -1,0 +1,280 @@
+{{ 'section-footer.css' | asset_url | stylesheet_tag }}
+
+{% liquid
+  assign social_icons = false
+  assign inline_list = false
+  assign icon_style = settings.icons_style
+%}
+
+{%- if
+  settings.social_twitter_link != blank
+  or settings.social_facebook_link != blank
+  or settings.social_pinterest_link != blank
+  or settings.social_instagram_link != blank
+  or settings.social_tumblr_link != blank
+  or settings.social_snapchat_link != blank
+  or settings.social_youtube_link != blank
+  or settings.social_vimeo_link != blank
+  or request.page_type == 'article'
+  or request.page_type == 'blog'
+-%}
+  {%- assign social_icons = true -%}
+{%- endif -%}
+
+{%- case section.blocks.size -%}
+  {%- when 1 -%}
+    {%- assign footer_item = 'site-footer__item--full-width' -%}
+    {%- assign inline_list = true -%}
+  {%- when 2 -%}
+    {%- assign footer_item = 'site-footer__item--one-half' -%}
+  {%- when 3 -%}
+    {%- assign footer_item = 'site-footer__item--one-third' -%}
+  {%- when 4 -%}
+    {%- assign footer_item = 'site-footer__item--one-quarter' -%}
+{%- endcase -%}
+
+<style>
+  .site-footer_email a {
+    text-transform: initial;
+  }
+</style>
+
+<footer class="site-footer {{ section.settings.background }}">
+  <div class="page-width">
+    <div class="site-footer__content">
+
+      {%- for block in section.blocks -%}
+        <div class="site-footer__item {{ footer_item }}" {{ block.shopify_attributes }}>
+          <div class="site-footer__item-inner">
+
+            {% if block.settings.title != blank %}
+              <h4 class="footer-title">{{ block.settings.title }}</h4>
+            {% endif %}
+
+            {%- case block.type -%}
+
+              {%- when 'brand' -%}
+                <div class="footer-brand">
+                  {% if block.settings.logo %}
+                    <a href="/">
+                    <img src="{{ block.settings.logo | image_url: width: block.settings.logo.width }}" alt="logo">
+                    </a>
+                  {% endif %}
+                  <p>{{ block.settings.description }}</p>
+                </div>
+
+              {%- when 'link_list' -%}
+                <ul class="footer-menu">
+                  {% for link in linklists[block.settings.menu].links %}
+                    <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+                  {% endfor %}
+                </ul>
+
+              {%- when 'text' -%}
+                <div class="footer-contact">
+                  {% if block.settings.company_email != blank %}
+                    <p><a href="mailto:{{ block.settings.company_email }}">{{ block.settings.company_email }}</a></p>
+                  {% endif %}
+
+                  <p>{{ block.settings.company_phone }}</p>
+
+                  {% if block.settings.custom_address != blank %}
+                    <p>{{ block.settings.custom_address }}</p>
+                  {% endif %}
+                </div>
+
+              {%- when 'newsletter' -%}
+                <div class="footer-newsletter">
+                  <form method="post" action="/contact#contact_form">
+                    <input type="hidden" name="form_type" value="customer">
+
+                    <input type="text" name="contact[first_name]" placeholder="First Name" required>
+                    <input type="text" name="contact[last_name]" placeholder="Last Name" required>
+                    <input type="text" name="contact[description]" placeholder="What best describes you?">
+                    
+
+                    <button type="submit">SUBSCRIBE</button>
+                  </form>
+                </div>
+                {% render 'social-icons' %}
+            {%- endcase -%}
+
+          </div>
+        </div>
+      {%- endfor -%}
+
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "t:sections.footer.name",
+  "settings": [
+    {
+      "type": "select",
+      "id": "background",
+      "label": "t:sections.all.colors.label",
+      "options": [
+        {
+          "value": "main-background",
+          "label": "t:sections.all.colors.background_1.label"
+        },
+        {
+          "value": "alt-background",
+          "label": "t:sections.all.colors.background_2.label"
+        },
+        {
+          "value": "alt-background-2",
+          "label": "t:sections.all.colors.background_3.label"
+        },
+        {
+          "value": "alt-background-3",
+          "label": "t:sections.all.colors.background_4.label"
+        },
+        {
+          "value": "background-modal",
+          "label": "t:sections.all.colors.background_5.label"
+        }
+      ],
+      "default": "main-background"
+    },
+    {
+      "type": "select",
+      "id": "background_decoration",
+      "label": "t:sections.footer.settings.background_decoration.label",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:sections.footer.settings.background_decoration.options__1.label"
+        },
+        {
+          "value": "handprints",
+          "label": "t:sections.footer.settings.background_decoration.options__3.label"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "image_picker",
+      "id": "custom_background_decoration",
+      "label": "t:sections.footer.settings.custom_background_decoration.label",
+      "info": "t:sections.footer.settings.custom_background_decoration.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.footer.settings.header__4.content",
+      "info": "t:sections.footer.settings.header__4.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_follow_on_shop",
+      "default": true,
+      "label": "t:sections.footer.settings.enable_follow_on_shop.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "link_list",
+      "name": "t:sections.footer.blocks.link_list.name",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:sections.footer.blocks.link_list.settings.title.label",
+          "default": "Navigate"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "t:sections.footer.blocks.link_list.settings.menu.label",
+          "info": "t:sections.footer.blocks.link_list.settings.menu.info",
+          "default": "footer"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "t:sections.footer.blocks.text.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:sections.footer.blocks.text.settings.title.label",
+          "default": "Need help?"
+        },
+        {
+          "type": "text",
+          "id": "company_email",
+          "label": "t:sections.footer.blocks.text.settings.company_email.label",
+          "default": "hello@example.com"
+        },
+        {
+          "type": "text",
+          "id": "company_phone",
+          "label": "t:sections.footer.blocks.text.settings.company_phone.label",
+          "default":  "+1 111 111 1111"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_address",
+          "label": "t:sections.footer.blocks.text.settings.show_address.label",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "custom_address",
+          "label": "t:sections.footer.blocks.text.settings.custom_address.label",
+          "info": "t:sections.footer.blocks.text.settings.custom_address.info"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "default": "<p>Use this text to share information about your brand<br>with your customers. Share announcements, or<br>welcome customers to your store.</p>",
+          "label": "t:sections.footer.blocks.text.settings.text.label"
+        }
+      ]
+    },
+    {
+  "type": "newsletter",
+  "name": "Email Signup",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Stay Updated"
+    }
+  ]
+},
+{
+  "type": "brand",
+  "name": "Brand Info",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description"
+    }
+  ]
+}
+  ],
+  "default": {
+    "blocks": [
+      {
+        "type": "link_list"
+      },
+      {
+        "type": "text"
+      }
+    ]
+  }
+}
+{% endschema %}

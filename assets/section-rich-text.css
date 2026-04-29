@@ -1,0 +1,139 @@
+.rich-text-section {
+  background: rgb(var(--color-background));
+  padding: 2.75rem 0;
+}
+
+.rich-text {
+  max-width: 80%;
+}
+
+.rich-text .h2 {
+  font-family: var(--font-family);
+  font-style: var(--font-style);
+  font-weight: var(--font-weight);
+  --font-size: calc(var(--font-scale) * 2.25rem);
+  font-size: calc(var(--font-size) * var(--font-section-scale, 1));
+}
+
+.rich-text .rte {
+  font-family: var(--font-family) !important;
+  font-style: var(--font-style) !important;
+  font-weight: var(--font-weight) !important;
+}
+
+.rich-text p {
+  --font-size: calc(var(--font-scale) * 1.125rem);
+  font-size: calc(var(--font-size) * var(--font-section-scale, 1));
+}
+
+.rich-text--left {
+  text-align: left;
+}
+
+.rich-text--center {
+  text-align: center;
+  margin: auto;
+}
+
+.rich-text--right {
+  text-align: right;
+  margin-left: auto;
+}
+
+.feeding-sec .rich-text-section {
+    background-color: #fff;
+}
+.feeding-sec h2.h2.heading-font {
+    text-transform: math-auto;
+    font-size: 50px;
+    max-width: 80%;
+    margin: auto;
+    line-height: 58px;
+    font-weight: 600;
+}
+
+.feeding-sec  .rte.rte-setting.body-font {
+    margin: 20px 0 60px;
+}
+.feeding-sec a.btn {
+    margin-bottom: 100px;
+    font-weight: 100;
+}
+
+.feeding-sec a.btn + h2.h2.heading-font {
+    max-width: 100%;
+    font-size: 40px;
+}
+
+.feeding-sec a.btn.btn--secondary {
+    margin-left: 20px;
+    background-color: transparent;
+}
+
+.feeding-sec a.btn.btn--secondary::after {
+    background-color: transparent;
+    border-color: #182A30;
+}
+.feeding-sec {
+    background-color: #fff;
+}
+.feeding-sec a.btn::after {background-color: #182A30;}
+
+.home-banner section-animate.hero-video {
+    height: 80vh;
+}
+.feeding-sec p {
+    font-size: 20px;
+    line-height: 32px;
+}
+
+@media only screen and (max-width: 1024px) {
+  .rich-text .h2 {
+    --font-size: calc(var(--font-scale) * 2.125rem);
+  }
+
+  .rich-text p {
+    --font-size: calc(var(--font-scale) * 1rem);
+  }
+.feeding-sec a.btn+h2.h2.heading-font {
+    font-size: 32px;
+}
+}
+
+@media(max-width:991px){
+.feeding-sec h2.h2.heading-font {
+    font-size: 34px;
+    max-width: 100%;
+    line-height: 48px;
+}
+.feeding-sec a.btn+h2.h2.heading-font {
+    font-size: 26px;
+}
+.home-banner section-animate.hero-video {
+    height: 100%;
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+}
+
+@media only screen and (max-width: 767px) {
+  .rich-text {
+    max-width: none;
+  }
+
+  .rich-text .h2 {
+    --font-size: calc(var(--font-scale) * 1.875rem);
+  }
+
+  .rich-text p {
+    --font-size: calc(var(--font-scale) * 0.875rem);
+  }
+  .feeding-sec a.btn {
+    margin-bottom: 15px;
+}
+.feeding-sec h2.h2.heading-font {
+    font-size: 32px;
+    line-height: 40px;
+}
+
+}

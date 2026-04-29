@@ -1,0 +1,716 @@
+{% if customer.tags contains "sales_rep"%}
+<style>
+.Polaris-Label__Text
+  {
+    text-align: initial;
+    margin-right:10px;
+    font-size: 1rem;
+  }
+  
+ .Polaris-Select__Input
+  {
+    min-width: 28em;
+    height: 3em;
+    width: fit-content;
+    padding: 0 0.2em !important;
+  }
+  
+  #addNewAddressToggleButton
+  {
+    margin:0 0 20px 0;
+    background-color: Transparent;
+    outline:none;
+    border: none;
+    text-decoration:underline;
+    color:blue;
+  }
+  
+  #customer_company, #customer_address1, #customer_address2, #customer_city
+  {
+    margin:10px 0 0 0;
+  }
+  
+  #btn_createdraftorder
+  {
+   background-color:#DC143C;
+    color:white;
+    border: 2px solid #DC143C;
+    border-radius: 4px;
+    height:40px;
+    font-size:11px;
+    cursor: pointer;
+  }
+  .RefreshLink{
+    color:blue;
+  }
+  .RefreshLink:hover{
+    text-decoration: underline;
+    cursor:pointer;
+  }
+ .LabelWrapper
+  {
+    align-self: center;
+    display: flex;
+    justify-content: flex-star;
+  }
+  .PolarisSelect ,.createdraftorderBtn{
+    display: flex;
+    justify-content: end;
+  }
+
+  @media only screen and (max-width: 500px) 
+   {
+        .ErrorMsg
+        {
+         width:100vw !important;
+        }
+        #createOrderFromCartPageDiv
+        {
+        display:contents;
+        }
+        #selectCustomerName
+        {
+        width:98% !important;
+        }
+     #btn_createdraftorder{
+       width: 44% !important;;
+     }
+     
+ }
+</style>
+<div id="createOrderFromCartPageDiv" style="position:relative;">
+  <div id="selectCustomerDiv">
+  	<div class="Polaris-Labelled__LabelWrapper LabelWrapper">
+        <div class="Polaris-Label">
+            <label id="selectRepsLabel" for="PolarisSelect2" class="Polaris-Label__Text">
+           	 SELECT CUSTOMER <span style="color:red;font-weight:bold;">*</span>	
+          </label>
+        </div>
+   	</div>
+   	<div class="Polaris-Select PolarisSelect">
+ <input list="custnamesList" onkeyup="selectCust()" placeholder=" Select Customer" id="selectCustomerName" style="width: 100%;padding: 6px;">
+  <datalist id="custnamesList">                                 
+  </datalist>
+   	</div>
+   </div>
+   <div id="selectAddressDiv" style="display:none;">
+   <br>
+    <div class="Polaris-Labelled__LabelWrapper" style="align-self: center;">
+        <div class="Polaris-Label">
+            <label id="selectRepsLabel" for="PolarisSelect2" class="Polaris-Label__Text">
+           	 SHIPPING ADDRESS <span style="color:red;font-weight:bold;">*</span>
+          </label>
+        </div>
+      </div>
+      <div class="Polaris-Select">
+       	 <select id="custAddresses" class="Polaris-Select__Input" aria-invalid="false" onchange="GetShippingRatesofSelectedAddress()">
+           <option name="" value=""> Select Address </option>
+         </select>
+      </div>
+    </div>
+   <div id="AddNewAddressDiv" style="display:none;">
+   <br>
+     <button id="addNewAddressToggleButton"  onclick="showAddNewAddressToggleButton()">Add New Shipping Address</button>
+ 	<br>
+     <div id="newAddr" style="display:none;width:100%;">
+       <div style="margin-top:0px;padding: 5px;border-radius: 2px;width:130%;">
+         <h2 class="Polaris-DisplayText_1u0t8 Polaris-DisplayText--sizeSmall_7647q">ADD NEW ADDRESS</h2>
+       </div>
+	   <div class="Polaris-ModalBodyWrapper_1kb1f">
+	 	<div class="Polaris-ModalBody_yjdx1 Polaris-Scrollable_1ed9o Polaris-Scrollable--vertical_uiuuj Polaris-Scrollable--hasBottomShadow_all2n Polaris-Scrollable--verticalHasScrolling_1n2r8" data-polaris-scrollable="true">
+	  	<section class="Polaris-Modal-Section_1b1h1">
+	   	<form method="post">
+        	<input name="customer[firstName]" id="customer_firstName" value="" placeholder="First name">
+	    	<input name="customer[lastName]" id="customer_lastName" value="" placeholder="Last name" ><br>
+			<input name="customer[company]" id="customer_company" value="" size="46" placeholder="Company (optional)"><br>
+        	<input name="customer[address1]" id="customer_address1" value="" size="46" placeholder="Address"><br>
+			<input name="customer[address2]" id="customer_address2"  value="" size="46" placeholder="Apartment, suite, etc. (optional)"><br>
+			<input name="customer[city]" id="customer_city" value="" size="46" placeholder="City">
+        	<div style="display:flex;">
+         	<select onchange="onChangeCountryDD()" id="customer_country" style="width:150px;padding: 0.8rem;margin: 10px 10px 0 0;">
+                   <option value="" selected>Country Region</option>
+                {{ country_option_tags }}
+        	</select><br>
+        	<select id="statedd" name="stateDropdown" aria-invalid="false" style="width:135px;padding: 0.8rem;margin: 10px 10px 0 0;"></select><br>
+        	<input id="country_zip" class="Polaris-TextField__Input" aria-labelledby="PolarisTextField19Label" aria-invalid="false" value="" size="12" placeholder="Zip" style="margin:10px 0 0 0;padding: 0.8rem;">
+        	</div>
+         	<br>
+        	<input id="phoneNumber" class="Polaris-TextField__Input" aria-labelledby="PolarisTextField19Label" aria-invalid="false" value="" size="46" placeholder="Phone number" style="margin:10px 0 0 0;"><br>
+ 		</form>
+		</section>
+       	</div>
+       </div>
+      </div>
+   </div>
+  
+  <div id="SelectShippingCostDiv" style="display:none;">
+      <div class="Polaris-Labelled__LabelWrapper" style="align-self: center;">
+        <div class="Polaris-Label">
+            <label style="text-align: initial;margin-right:10px;font-size: 1rem;" id="selectRepsLabel" for="PolarisSelect2" class="Polaris-Label__Text">
+           	 SHIPPING COST
+          </label>
+        </div>
+  </div>
+  <div class="Polaris-Select">     	 
+     <select id="ShippingRates" class="Polaris-Select__Input" aria-invalid="false" style="min-width: 28em;height: 3em;width: fit-content;padding: 0 0.2em !important;"><option value=""> Select Shipping Cost </option></select>
+  </div>
+  <br>
+  </div>
+  <div class="ErrorMsg">
+  <p id="customerSelectionError"></p> 
+  </div>
+  <div>
+  <p id="pageRefresh" class="RefreshLink" onclick=location.reload() style="display:none;">click to refresh </p>
+  </div>
+  <br>
+  
+   <div class="cart-buttons createdraftorderBtn">
+  		<button id="btn_createdraftorder" class="button--lower" onclick="createDraftOrder()" style="width:72%;">CREATE DRAFT ORDER</button>
+	</div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+  var isSelectAdreesFromDropDownFeatureOn = false;
+  var isAddNewShippingAddressFeatureOn = false;
+  var isCreateOrderFeatureOn = false;
+  var isSelectShippingCostFeatureOn = false;
+  let IsAddNewAddressDivOpenFlag  = false;
+  let isNewAddress = false;
+  var allLineItemProperties =[];
+  var ClientInvoiceselectedProduct=[];
+  var CustomerDetails=[];
+  var CustomerId;
+  var CustomerEmail;
+ 
+  
+  /* Show Or Hide Add new Address Div*/
+  var showAddNewAddressToggleButton = function() {
+  IsAddNewAddressDivOpenFlag = !IsAddNewAddressDivOpenFlag;
+  $("#newAddr").toggle();
+  event.preventDefault();
+  }
+  
+  /* Get Selected customer adderesses*/
+  var getAddressesOfSelectedCustomer = function()
+  {
+    if(isSelectAdreesFromDropDownFeatureOn)
+    { 
+    $('#custAddresses').empty();
+  	$('#custAddresses').append('<option value=""> Loading . . . </option>');
+    var customerId =CustomerId;
+    var urlVal=window.location.protocol +"//"+ window.location.hostname +"/apps/SalesRep?customerId="+customerId+"&data=31";
+            $.get(
+              urlVal,
+              function (response, status) 
+              {
+                getCustomerAddressData = response.customerAddressesList;
+                $('#custAddresses').empty();
+     			$('#custAddresses').append('<option value=""> Select Address </option>');  
+                for(var addr in response.customerAddressesList)
+                {
+                  if(response.customerAddressesList[addr].address1 != null){ var address1 = response.customerAddressesList[addr].address1; }else{ address1 = '' }
+                  if(response.customerAddressesList[addr].city!= null){ var city = response.customerAddressesList[addr].city;}else{ city = ''}
+                  if(response.customerAddressesList[addr].province != null){ var province = response.customerAddressesList[addr].province;}else{ province = ''}
+                  if(response.customerAddressesList[addr].country != null){ var country = response.customerAddressesList[addr].country;}else{ country = ''}
+                  if(response.customerAddressesList[addr].zip != null){ var zip = response.customerAddressesList[addr].zip;}else{ zip = ''}
+                  
+                  $('#custAddresses').append('<option name='+ response.customerAddressesList[addr].id +' value='+ response.customerAddressesList[addr].id +'> '+ address1 +' '+ city +' '+ province +' '+ country +' '+ zip +'</option>');              
+                  
+                }
+              });
+    $('#custAddresses').change();
+  }
+  }
+  
+ function onChangeCountryDD()
+ {
+   $('#statedd').find('option').not(':first').remove();
+   var stateArray = $('#customer_country option:selected').attr("data-provinces"); //JSON.parse($('#customer_country option:selected').attr("data-provinces"));
+   var parsedStateArray = stateArray != undefined && stateArray != null ? JSON.parse(stateArray) : [];
+   var states = "";
+   for(var state in parsedStateArray)
+    {
+     states += '<option value="'+parsedStateArray[state][0]+'">'+ parsedStateArray[state][0]+ '</option>';
+    }
+   $('#statedd').append(states);
+ }
+  
+ var createDraftOrder = function()
+    {  
+      event.preventDefault();
+      $("#customer_error").hide();
+      var sr_customer_email= checkFilteredString(CustomerEmail);
+      var sr_customer_fname= checkFilteredString(CustomerId);
+      var cust_addr = $("#custAddresses option:selected").val();
+      var completeDraftOrderStatus = false;
+      var setCustomerAddressData = [];
+      var shippingName = null;
+      var shippingCost = null;   
+      $("#btn_createdraftorder").prop('disabled', true);
+        if(isCreateOrderFeatureOn)
+        {
+          completeDraftOrderStatus = true;
+        }
+        if(isSelectAdreesFromDropDownFeatureOn)
+        {
+          var addressSelected = getCustAddresses(setCustomerAddressData);
+        }
+        if(isSelectShippingCostFeatureOn)
+        {
+          if($("#ShippingRates option:selected").attr("name") != "" && $("#ShippingRates option:selected").val() != "")
+          {
+          	shippingName = $("#ShippingRates option:selected").attr("name");
+   		  	shippingCost = $("#ShippingRates option:selected").val();
+          }
+        }
+        if(sr_customer_fname == "" || sr_customer_email=="")
+        {
+          
+          $("#customerSelectionError").text("No Customer Selected. Please select customer and try again.");
+          $("#customerSelectionError").css("color", "#f80000");
+          $("#customerSelectionError").show();
+           $("#btn_createdraftorder").prop('disabled',false);
+        }
+        else
+        {
+          $("#customerSelectionError").hide(); 
+  		
+          $("#btn_createdraftorder").text("CREATING ORDER...");
+           GetCartData();
+            var prods = JSON.stringify(ClientInvoiceselectedProduct);
+             if(ClientInvoiceselectedProduct.length<1)
+             {
+               $("#btn_createdraftorder").text("Check out");
+               $("#btn_createdraftorder").prop('disabled', false);
+               $("#customerSelectionError").text('No Products Selected. Please select products and try again.');  
+               $("#customerSelectionError").css("color", "#f80000");
+               $("#customerSelectionError").show();
+             }
+          	 else
+             { 
+                var order = {
+                  "email" : "{{customer.email}}",
+                  "prods" : prods,
+                  "customerId" : "{{customer.id}}",
+                  "wholesale": "false",
+                  "Index": "-1",
+                  "custId" : sr_customer_fname,
+                  "cusemail": sr_customer_email,
+                  "pro":  false,
+                  "cusAddress":setCustomerAddressData,
+                  "propertiesArr" : allLineItemProperties,
+                  "completeDraftOrder":completeDraftOrderStatus,
+                  "shippingtitle":shippingName,
+          		  "shippingprice":shippingCost,
+                  "isNewaddress": isNewAddress
+                }
+                var customerdata = JSON.stringify(order);
+                var urlVal=window.location.protocol +"//"+ window.location.hostname +"/apps/SalesRep?pageIndex=0";
+                $.ajax({
+                  url : urlVal,
+                  type : "post",
+                  headers: {
+        				"Content-Type": "application/json"
+    				},
+                  data: customerdata,
+                  dataType: "json",
+                  success : function(data, status) {           
+                         createDraftOrderFromCartPageResponseSuccess(data, status);
+                         $("#btn_createdraftorder").prop('disabled', false);
+                      }
+                  });
+                }
+        }
+      }
+ 
+ var GetCartData = function()
+        {         
+            var CartData = [];  
+          	var item_count = {{cart.item_count}}
+          
+        	{% for line in cart.items %}
+                var price = ({{line.variant.price | amount_no_decimals  }})/100;
+                var total_price = ({{line.final_line_price | amount_no_decimals  }})/100;
+          
+          		var variant = [];
+                var propertiesObj = {};
+                var propertiesArr =[];
+          
+          		variant.push({
+                  "price":price,
+                  "id":'{{line.variant_id}}'
+                });
+          
+
+                {% for property in line.properties %}
+                propertiesArr.push({
+                    "name" : '{{ property | first }}',
+                    "value" : '{{ property | last | replace: '&quot;', '\"' | replace: '&amp;', '&' }}'
+                    });
+    			{% endfor %}
+          
+          allLineItemProperties.push({
+            "variantId": '{{line.variant_id}}', 
+             "variantProperties": propertiesArr 
+          });
+                
+                CartData.push({
+                "Image":'{{ line.image | product_img_url: '100x100' }}',
+                "title":'{{line.title}}',
+                "product_quantity":{{line.quantity}},
+                "Item_Price":price.toString(),
+                "product_price":total_price,
+                "product_type":'{{line.product.type}}',
+                "variantId":'{{line.variant_id}}',
+                "product_size":"{{line.variant.option1}}",
+                "handle":'{{line.product.handle}}',
+                "count":{{cart.item_count}},
+                "variants": variant
+              });
+          	{%endfor%}
+          
+          
+          if(item_count != 0 )
+          {
+          	for(var data in CartData)
+            {
+                ClientInvoiceselectedProduct.push({
+                  "variantId" :CartData[data].variantId, 
+                   "quantity" :CartData[data].product_quantity,
+                   "product_type" :CartData[data].product_type,
+                   "price" : CartData[data].Item_Price,
+                   "Image" : CartData[data].Image
+                });
+            } 
+          }          
+        }
+ 
+ var createDraftOrderFromCartPageResponseSuccess = function (response,textStatus)
+    {
+        if (response == null)
+        {
+          if(isCreateOrderFeatureOn)
+          {
+            $("#btn_createdraftorder").text("CREATE ORDER");
+          }
+          else
+          {
+            $("#btn_createdraftorder").text("CREATE DRAFT ORDER");
+          }
+          $("#customerSelectionError").text('Error during creating your order.Please contact support');
+          $("#customerSelectionError").css("color", "#f80000");
+          $("#customerSelectionError").show();
+          event.preventDefault();
+        }        
+        else if (response.id)
+        {
+           ClientInvoiceselectedProduct=[];
+          	if(isCreateOrderFeatureOn)
+          {
+            $("#btn_createdraftorder").text("CREATE ORDER");
+          }
+          else
+          {
+            $("#btn_createdraftorder").text("CREATE DRAFT ORDER");
+          }
+            $("#customerSelectionError").text('Order Invoice created successfully and is emailed to customer');
+            $("#customerSelectionError").css("color", "darkseagreen");
+            $("#customerSelectionError").show();
+           $("#pageRefresh").text('click to refresh');
+           $("#pageRefresh").show();
+          
+          $.ajax({
+            type: "POST",
+            async : false,
+            url: '/cart/clear.js',
+            dataType: 'json',
+            success: function(){  
+          },
+          });
+         
+        }
+        else {
+          if(isCreateOrderFeatureOn)
+          {
+            $("#btn_createdraftorder").text("CREATE ORDER");
+          }
+          else
+          {
+            $("#btn_createdraftorder").text("CREATE DRAFT ORDER");
+          }
+          $("#customerSelectionError").text('Error during creating your order.Please contact support');
+          $("#customerSelectionError").css("color", "#f80000");
+          $("#customerSelectionError").show();
+          event.preventDefault();
+        }    
+     }
+ 
+ var getCustAddresses = function(setCustomerAddressData)
+  {
+    var customerAddrs = $('#custAddresses').val();
+      
+    //$('#custAddresses').empty();
+    if(IsAddNewAddressDivOpenFlag == true)
+    {
+       if((($('#customer_address1').val()) != ""|| (isNaN($('#customer_address1').val()))) && (($('#customer_city').val()) != ""|| (isNaN($('#customer_city').val()))) && (($('#customer_country').val()) != ""|| (isNaN($('#customer_country').val()))) && (($('#country_zip').val()) != ""|| (isNaN($('#country_zip').val()))) && (($('#customer_firstName').val()) != ""|| (isNaN($('#customer_firstName').val()))) && (($('#customer_lastName').val()) != ""|| (isNaN($('#customer_lastName').val()))) && (($('#phoneNumber').val()) != ""|| (isNaN($('#phoneNumber').val()))))
+       { 
+         var toggleFirstName = $('#customer_firstName').val();
+         var toggleLastName = $('#customer_lastName').val();
+         var togglePhn = $('#phoneNumber').val();
+         var toggleaddress1 = $('#customer_address1').val();
+         var toggleCompany = $('#customer_company').val();
+       	 var toggleCity = $('#customer_city').val();
+       	 var toggleCountry = $('#customer_country').val();
+       	 var toggleZip = $('#country_zip').val();
+         var togglePhn = $('#phoneNumber').val();
+      	
+         setCustomerAddressData.push({
+                  "fname" :toggleFirstName, 
+                  "lastname" :toggleLastName,
+                  "phone" : togglePhn,
+                  "address1" :toggleaddress1,
+           		  "company" : toggleCompany,
+                  "city" :toggleCity,
+                  "country" : toggleCountry,
+                  "zip" : toggleZip
+               });
+         
+         isNewAddress = true;
+         return true;
+      	}
+     	else
+     	{
+        	if(isCreateOrderFeatureOn)
+          {
+            $("#btn_createdraftorder").text("CREATE ORDER");
+          }
+          else
+          {
+            $("#btn_createdraftorder").text("CREATE DRAFT ORDER");
+          }
+          $("#customerSelectionError").text("Please select Address and try again.");
+       		$("#customerSelectionError").css("color", "#f80000");
+            $("#customerSelectionError").show();
+       		return false;
+     	}
+  	}
+  else
+    {
+      var i;
+      if(customerAddrs != null && customerAddrs != "")
+      {
+      for (i = 0; i < getCustomerAddressData.length; i++) {
+        if(getCustomerAddressData[i].id == customerAddrs)
+        {
+          setCustomerAddressData.push({
+            	  "fname" : getCustomerAddressData[i].first_name, 
+                  "lastname" : getCustomerAddressData[i].last_name,
+                  "phone" : getCustomerAddressData[i].phone1,
+                  "address1" :getCustomerAddressData[i].address1,
+                  "city" :getCustomerAddressData[i].city,
+                  "province" :getCustomerAddressData[i].province,
+                  "country" : getCustomerAddressData[i].country,
+                  "zip" : getCustomerAddressData[i].zip
+                });
+        }
+      }
+       isNewAddress = false;
+       return true;
+     }
+     else
+     {
+       if(isCreateOrderFeatureOn)
+          {
+            $("#btn_createdraftorder").text("CREATE ORDER");
+          }
+          else
+          {
+            $("#btn_createdraftorder").text("CREATE DRAFT ORDER");
+          }
+          
+          $("#customerSelectionError").text("Please fill all address fields.");
+          $("#customerSelectionError").css("color", "#f80000");
+          $("#customerSelectionError").show();
+       return false;
+     }
+    }
+  }
+ 
+  var GetShippingRatesofSelectedAddress = function()
+ {
+   var customerAddrs = $('#custAddresses').val();
+   var customerzip,customercountry,customerprovince;
+    try
+    {  
+    if(isSelectShippingCostFeatureOn)
+    {
+     if(IsAddNewAddressDivOpenFlag == true)
+     {
+       if((($('#customer_country').val()) != ""|| (isNaN($('#customer_country').val()))) && (($('#country_zip').val()) != ""|| (isNaN($('#country_zip').val()))) && (($('#statedd').val()) != ""|| (isNaN($('#statedd').val()))))
+       { 
+         customerzip = $('#customer_country').val();
+       	 customercountry = $('#country_zip').val();
+         customerprovince = $('#statedd').val();
+      	}
+     }
+  	 else
+     {
+      var i;
+      if(customerAddrs != null)
+      {
+      for (i = 0; i < getCustomerAddressData.length; i++) 
+      {
+        if(getCustomerAddressData[i].id == customerAddrs)
+        {
+          shippingrates=[];
+          customerzip = getCustomerAddressData[i].zip;
+          customercountry = getCustomerAddressData[i].country;
+          customerprovince = getCustomerAddressData[i].province;
+          
+        }
+       }
+      }
+     }
+      
+      $.ajax({
+			 type: 'POST',
+			 url: '/cart/prepare_shipping_rates.json?shipping_address[zip]='+customerzip+'&shipping_address[country]='+customercountry+'&shipping_address[province]='+customerprovince+'',
+			 success: function (res) {
+			 console.log("res",res);
+          
+         $.ajax({
+			 type: 'GET',
+			 url: '/cart/async_shipping_rates.json?shipping_address[zip]='+customerzip+'&shipping_address[country]='+customercountry+'&shipping_address[province]='+customerprovince+'',
+			 success: function (res1) {
+			 console.log("res1",res1);
+               shippingrates = res1;
+               showShipingRatesInDropDown(res1);
+			 }
+			 });
+               
+             },
+             error: function (err){
+               	$("#customerSelectionError").text("There was a problem calculating your shipping rates.");
+          		$("#customerSelectionError").css("color", "#f80000");
+          		$("#customerSelectionError").show();                
+        	}
+      });
+    }
+    }
+    catch(ex)
+    {
+                $("#customerSelectionError").text("Something went wrong please try again.");
+     
+    }
+ }
+  
+ var showShipingRatesInDropDown = function(shippingRatesArray)
+ {
+   var i;
+   for (i=0;i<shippingRatesArray.shipping_rates.length;i++) 
+   {
+   		$('#ShippingRates').append('<option name='+ shippingRatesArray.shipping_rates[i].name +' value='+ shippingRatesArray.shipping_rates[i].price +'> '+shippingRatesArray.shipping_rates[i].name+' / '+shippingRatesArray.shipping_rates[i].price+'</option>');
+   }
+   
+ }
+ var checkFilteredString = function(inputString)
+ {
+ return (inputString != undefined && inputString != null && inputString != '') ? inputString : "";
+ }
+</script>
+<script>
+  $(document).ready(function(){
+    for(var feature in createOrderFromCartPageFeatureList)
+    {
+      if(feature == "SelectAdreesFromDropDownFeature")
+      {
+        if(createOrderFromCartPageFeatureList[feature] == true)
+        {
+          isSelectAdreesFromDropDownFeatureOn = true;
+          $("#selectAddressDiv").show();
+        }
+      }
+      if(feature == "AddNewShippingAddressFeature")
+      {
+        if(createOrderFromCartPageFeatureList[feature] == true)
+        {
+          isAddNewShippingAddressFeatureOn = true;
+          $("#AddNewAddressDiv").show();
+        }
+      }
+      if(feature == "CreateOrderFeature")
+      {
+        if(createOrderFromCartPageFeatureList[feature] == true)
+        {
+          isCreateOrderFeatureOn = true;
+          $("#btn_createdraftorder").text("CREATE ORDER");
+        }
+      }
+      if(feature == "SelectShippingCostFeature")
+      {
+        if(createOrderFromCartPageFeatureList[feature] == true)
+        {
+          isSelectShippingCostFeatureOn = true;
+          $("#SelectShippingCostDiv").show();
+        }
+      }
+    }
+    
+   var urlVal=window.location.protocol +"//"+ window.location.hostname +"/apps/SalesRep?customerId={{customer.id}}&data=30";
+            $.get(
+              urlVal,
+              function (serverData, status) 
+              {
+                CustomerDetails=serverData.repcustomers;        
+                for(var cust in serverData.repcustomers)
+                {
+                 option=checkFilteredString(serverData.repcustomers[cust].CustomerName);
+                 email=checkFilteredString(serverData.repcustomers[cust].CustomerMailid);
+                 if(option !="" && email !="")
+                {
+                  option +=" / ";
+                }
+                        
+                 value= serverData.repcustomers[cust].CustomerName;
+                 NameAndMailId =  option  + email;
+                  
+                  if(option !="" || email !="")
+                  {
+                   $('#custnamesList').append('<option value="'+ NameAndMailId +'">' + NameAndMailId +'</option>'); 
+                  }
+                }
+             }
+            );
+  
+  });
+//   Search or Select Customer name 
+ function selectCust()
+ { 
+    var selectInput=$("#selectCustomerName").val();
+                 for(var i in CustomerDetails)
+                {
+                 option=checkFilteredString(CustomerDetails[i].CustomerName);
+                 email=checkFilteredString(CustomerDetails[i].CustomerMailid);
+                 if(option !="" && email !="")
+                {
+                  option +=" / ";
+                } 
+                 NameAndMailId =  option  + email;
+                  if(selectInput==NameAndMailId)
+                  {
+                    CustomerId = CustomerDetails[i].CustomerId;
+                    CustomerEmail=email;
+                  }   
+                }
+  }
+</script>
+<script>
+  var createOrderFromCartPageFeatureList = 
+      {
+        "SelectAdreesFromDropDownFeature" : false,
+        "AddNewShippingAddressFeature" : false,
+        "CreateOrderFeature" : false,
+        "SelectShippingCostFeature": false
+  	  };
+</script>
+{% endif %}

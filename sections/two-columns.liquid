@@ -1,0 +1,93 @@
+<div class="two-column-section">
+  <div class="column-container">
+    
+    <!-- LEFT -->
+    <div class="left">
+      <h2>{{ section.settings.heading }}</h2>
+
+      <div class="buttons">
+        {% if section.settings.btn1_label != blank %}
+          <a href="{{ section.settings.btn1_link }}" class="btn btn-primary">
+            {{ section.settings.btn1_label }}
+          </a>
+        {% endif %}
+
+        {% if section.settings.btn2_label != blank %}
+          <a href="{{ section.settings.btn2_link }}" class="btn btn--secondary">
+            {{ section.settings.btn2_label }}
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right">
+      <p>{{ section.settings.description }}</p>
+
+      <div class="box">
+        <p>{{ section.settings.highlight_text }}</p>
+        <strong>{{ section.settings.highlight_subtext }}</strong>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Two Column Section",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Horse owners shouldn’t have to guess when it comes to nutrition."
+    },
+    {
+      "type": "text",
+      "id": "btn1_label",
+      "label": "Button 1 Label",
+      "default": "Explore Formulas"
+    },
+    {
+      "type": "url",
+      "id": "btn1_link",
+      "label": "Button 1 Link"
+    },
+    {
+      "type": "text",
+      "id": "btn2_label",
+      "label": "Button 2 Label",
+      "default": "Take The Nutritional Assessment"
+    },
+    {
+      "type": "url",
+      "id": "btn2_link",
+      "label": "Button 2 Link"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Right Description",
+      "default": "The supplement market is filled with false claims..."
+    },
+    {
+      "type": "textarea",
+      "id": "highlight_text",
+      "label": "Highlight Text",
+      "default": "Core Balance offers a more refined approach..."
+    },
+    {
+      "type": "text",
+      "id": "highlight_subtext",
+      "label": "Highlight Subtext",
+      "default": "TRUE RESULTS COME FROM THE RIGHT BALANCE—NOT MORE PRODUCTS."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Two Column Section"
+    }
+  ]
+}
+{% endschema %}
